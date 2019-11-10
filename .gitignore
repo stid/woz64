@@ -4,3 +4,5 @@ bin/*
 *.o
 *.sym
 *.lst
+*.prg
+buildlog.txt

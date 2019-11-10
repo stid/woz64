@@ -6,10 +6,16 @@
 // MACROS
 // -----------------------
 
+.pc = * "Screen Routines"
+
 .macro print(stringAddr) {
         lda #<stringAddr // Low byte
         ldx #>stringAddr // High byte
         jsr Screen.print
+}
+
+.macro cPrint() {
+        jsr Screen.printChar
 }
 
 .macro ClearScreen(screen, clearByte) {
@@ -21,7 +27,7 @@
 	sta screen + $200, x
 	sta screen + $300, x
 	inx
-	bne !loop-
+	bne.r !loop-
 }
 
 .macro ClearColorRam(clearByte) {
@@ -33,7 +39,7 @@
 	sta $D800 + $200, x
 	sta $D800 + $300, x
 	inx
-	bne !loop-
+	bne.r !loop-
 }
 
 .macro SetBorderColor(color) {
@@ -94,9 +100,9 @@ init: {
 }
 
 printChar: {
-
+                stx MemMap.SCREEN_SPACE.tempX
                 // New Line
-                cmp #13
+                cmp #$ff
                 bne.r !+
                 jsr screenNewLine
                 iny
@@ -139,11 +145,12 @@ printChar: {
                 inc MemMap.SCREEN_SPACE.CursorCol
                 lda MemMap.SCREEN_SPACE.CursorCol
                 cmp #constants.COLUMN_NUM+1
-                bcc exita
+                bcc.r exita
 
                 // CursorCol > COLUMN_NUM ? new line
                 jsr screenNewLine
 exita:
+                ldx MemMap.SCREEN_SPACE.tempX
                 rts
 
 }

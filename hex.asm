@@ -1,5 +1,8 @@
 #importonce
 #import "mem_map.asm"
+.filenamespace Hex
+
+.pc = * "Hex Routines"
 
 
 //   ————————————————————————————————————
@@ -12,7 +15,7 @@
 //                    .x: lsn ascii char
 //                    .y: entry value
 //   ————————————————————————————————————
-binhex:         pha                   //save byte
+byteToHex:      pha                   //save byte
                 and #%00001111        //extract lsn
                 tax                   //save it
                 pla                   //recover byte
@@ -28,8 +31,9 @@ binhex:         pha                   //save byte
 //
 //   convert nybble to hex ascii equivalent...
 binhex1:        cmp #$0a
-                bcc binhex2          //in decimal range
-                adc #$66              //hex compensate
+                bcc binhex2           //in decimal range
+                sbc #$09              //hex compensate
+                rts
 binhex2:        eor #%00110000        //finalize nybble
                 rts                   //done
 
