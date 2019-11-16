@@ -510,7 +510,7 @@ cursorY:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-    .pc = * "Keyboard Scan Routine"
+    * = * "Keyboard Scan Routine"
 
 
     // ZERO PAGE Varibles

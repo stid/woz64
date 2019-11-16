@@ -20,29 +20,10 @@
     .label  result                          = ZPAGE_BASE+11   // 2 bytes
 }
 
-.namespace KEYB_SPACE {
-    .label ScanResult                       = ZPAGE_BASE+13   // 8 bytes
-    .label BufferNew                        = ZPAGE_BASE+21   // 3 bytes
-    .label KeyQuantity                      = ZPAGE_BASE+24   // 1 byte
-    .label NonAlphaFlagX                    = ZPAGE_BASE+25   // 1 byte
-    .label NonAlphaFlagY                    = ZPAGE_BASE+26   // 1 byte
-    .label TempZP                           = ZPAGE_BASE+27   // 1 byte
-    .label SimultaneousKeys                 = ZPAGE_BASE+28   // 1 byte
-
-    // TODO: Need $FF init
-    .label BufferOld                        = ZPAGE_BASE+28   // 1 byte
-    .label Buffer                           = ZPAGE_BASE+29   // 4 byte
-    .label BufferQuantity                   = ZPAGE_BASE+33   // 1 byte
-    .label SimultaneousAlphanumericKeysFlag = ZPAGE_BASE+34   // 1 byte
-
-    .label  TempX                           = ZPAGE_BASE+35    // 1 byte
-    .label  TempY                           = ZPAGE_BASE+36    // 1 byte
-}
-
 .namespace KEYB2_SPACE {
-    .label KeyR                             = ZPAGE_BASE+37
+    .label KeyR                             = ZPAGE_BASE+37 // 1 bytes
     .label SYS_Keyd                         = ZPAGE_BASE+38 // 10 bytes
-    .label SYS_Ndx                          = ZPAGE_BASE+48 // 10 bytes
+    .label SYS_Ndx                          = ZPAGE_BASE+48 // 1 bytes
     .label SYS_Xmax                         = ZPAGE_BASE+49 // 1 bytes
     .label SYS_Shflag                       = ZPAGE_BASE+50 // 1 bytes
     .label SYS_Sfdx                         = ZPAGE_BASE+51 // 1 bytes
@@ -50,4 +31,10 @@
     .label SYS_Delay                        = ZPAGE_BASE+53 // 1 bytes
     .label SYS_Kount                        = ZPAGE_BASE+54 // 1 bytes
     .label SYS_Lstshf                       = ZPAGE_BASE+55 // 1 bytes
+}
+
+.namespace MEMORY_SPACE {
+    .label from                             = ZPAGE_BASE+56 // 2 bytes
+    .label to                               = ZPAGE_BASE+58 // 2 bytes
+    .label size                             = ZPAGE_BASE+60 // 2 bytes
 }

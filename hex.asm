@@ -2,7 +2,7 @@
 #import "mem_map.asm"
 .filenamespace Hex
 
-.pc = * "Hex Routines"
+* = * "Hex Routines"
 
 
 //   ————————————————————————————————————

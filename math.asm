@@ -3,7 +3,7 @@
 
 #import "mem_map.asm"
 
-.pc = * "Math Routines"
+* = * "Math Routines"
 
 multiply: {
                 stx MemMap.MATH_SPACE.multiTmpX

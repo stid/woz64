@@ -6,7 +6,7 @@
 // MACROS
 // -----------------------
 
-.pc = * "Screen Routines"
+* = * "Screen Routines"
 
 .macro print(stringAddr) {
         lda #<stringAddr // Low byte
@@ -102,7 +102,7 @@ init: {
 printChar: {
                 stx MemMap.SCREEN_SPACE.tempX
                 // New Line
-                cmp #$ff
+                cmp #$8e
                 bne.r !+
                 jsr screenNewLine
                 iny
@@ -186,3 +186,76 @@ screenNewLine: {
                 rts
 }
 
+
+//   ————————————————————————————————————————
+//   petToScreen
+//   ————————————————————————————————————————
+//   ————————————————————————————————————————
+//   preparatory ops: .a: pet byte to convert
+//
+//   returned values: .a: conv SCREEN char
+//   ————————————————————————————————————————
+petToScreen: {
+        // $00-$1F
+                        cmp #$1f
+                        bcs !+
+                        sec
+                        adc #128
+                        jmp convDone
+
+        // $20-$3F
+        !:
+                        cmp #$3f
+                        bcs !+
+                        jmp convDone
+
+        // $40-$5F
+        !:
+                        cmp #$5f
+                        bcs !+
+                        sec
+                        sbc #$40
+                        jmp convDone
+
+
+        // $60-$7F
+        !:
+                        cmp #$7F
+                        bcs !+
+                        sec
+                        sbc #32
+                        jmp convDone
+
+        // $80-$9F
+        !:
+                        cmp #$9F
+                        bcs !+
+                        sec
+                        adc #64
+                        jmp convDone
+        // $A0-$BF
+        !:
+                        cmp #$BF
+                        bcs !+
+                        sec
+                        sbc #64
+                        jmp convDone
+
+        // $C0-$DF
+        // $E0-$FE
+        !:
+                        cmp #$FE
+                        bcs !+
+                        sec
+                        sbc #128
+                        jmp convDone
+
+        // $FF
+        !:
+                        lda $5E
+
+
+        convDone:
+                        rts
+
+}

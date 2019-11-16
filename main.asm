@@ -1,4 +1,4 @@
-//BasicUpstart2(start)
+BasicUpstart2(start)
 
 * = $8000 "Main"
 
@@ -15,11 +15,11 @@
 
 
 #import "screen.asm"
-#import "keyb.asm"
+#import "keyb2.asm"
 #import "hex.asm"
 
 
-.pc = * "Kernel Start"
+* = * "Kernel Start"
 
 coldstart:
                 ldx #$FF
@@ -36,28 +36,26 @@ start:
                 jsr initApp;
                 print(testString)
 
-getKeyb:
-                jsr Keyboard.start
-                bcs NoValidInput
-                stx MemMap.KEYB_SPACE.TempX
-                sty MemMap.KEYB_SPACE.TempY
-                cmp #$ff
-                // Check A for Alphanumeric keys
-                beq NoNewAphanumericKey
-                jsr printKey
-                jmp getKeyb
+loop:
+                lda #$FF
+Raster:        cmp $D012
+	            bne Raster
+                jsr Keyboard2.ReadKeyb
+                jsr Keyboard2.GetKey
+                bcs Skip
 
-printKey:
+                .break
+
+
+                jsr Screen.petToScreen
+                //jsr Hex.byteToHex
+                //cPrint()
+                //txa
+
                 cPrint()
-                rts
 
 
-NoNewAphanumericKey:
-                // Check X & Y for Non-Alphanumeric Keys
-                ldx MemMap.KEYB_SPACE.TempX
-                ldy MemMap.KEYB_SPACE.TempY
-NoValidInput:   // This may be substituted for an errorhandler if needed.
-                jmp getKeyb
+Skip:          jmp loop
 
 
 initApp: {
@@ -66,16 +64,17 @@ initApp: {
                 SetBorderColor(constants.MAIN_COLOR)
                 SetBackgroundColor(constants.BORDER_COLOR)
                 jsr Screen.init
-                jsr Keyboard.init
+                jsr Keyboard2.init
                 rts
 }
 
-.pc = * "Kernel Data"
+
+* = * "Kernel Data"
 
 .encoding "screencode_mixed"
 testString:
         .text "=stid= os - v 0.1.1a"
-        .byte $ff
+        .byte $8e
         .byte 0
 
 
