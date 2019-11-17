@@ -1,4 +1,4 @@
-BasicUpstart2(start)
+///BasicUpstart2(start)
 
 * = $8000 "Main"
 
@@ -50,15 +50,13 @@ Raster:         cmp $D012
                 // Execute Item
                 jsr Shell.push
                 jsr Shell.wozExec
-                lda #$0d
-                jsr Screen.petToScreen
-                cPrint()
+                jsr Screen.screenNewLine
+                jsr Screen.screenNewLine
                 jsr Shell.clear
                 jmp loop
 inputChar:     
                 jsr Shell.push
                 jsr Screen.petToScreen
-
                 cPrint()
 
 
@@ -81,10 +79,10 @@ initApp: {
 
 .encoding "screencode_mixed"
 testString:
-        .text "=stid= os - v 0.1.1a"
+        .text "woz64 - v 0.1.5a"
         .byte $8e
-        .byte 0
-
+        .text "----------------------------------------"
+        .byte $8e, 0
 
 * = $9FFF "EpromFiller"
     .byte 0

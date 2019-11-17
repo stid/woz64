@@ -41,7 +41,12 @@ wozExec: {
 
     SETSTOR:
                     asl
-    SETMODE:        sta MemMap.SHELL.MODE
+    SETMODE:        
+                    cmp #0
+                    beq !+
+                    eor #%10000000
+!:
+                    sta MemMap.SHELL.MODE
 
     BLSKIP:         iny
 
@@ -57,7 +62,7 @@ wozExec: {
                     beq     SETMODE                 // Set BLOCK XAM mode ("." = $AE)
                     cmp     #':'
                     beq     SETSTOR                 // Set STOR mode! $BA will become $7B
-                    cmp     #'R'
+                    cmp     #'r'
                     beq     RUN                     // Run the program! Forget the rest
                     stx     MemMap.SHELL.L          // Clear input value (X=0)
                     stx     MemMap.SHELL.H
@@ -70,9 +75,7 @@ wozExec: {
                     eor     #$30                    // Map digits to 0-9
                     cmp     #9+1                    // Is it a decimal digit?
                     bcc     DIG                     // Yes!
-
-                    // TODO: THIS IS NOT WORKING
-                    adc     #$08                    // Map letter "A"-"F" to $FA-FF
+                    adc     #$88                    // Map letter "A"-"F" to $FA-FF
                     cmp     #$FA                    // Hex letter?
                     bcc     NOTHEX                  // No! Character not hex
 
@@ -180,16 +183,10 @@ PRBYTE:             pha                     // Save A for LSD
 PRHEX:              and     #%00001111     // Mask LSD for hex print
                     ora     #'0'            // Add "0"
                     cmp     #'9'+1          // Is it a decimal digit?
-                    bcc     ECHO            // Yes! output it
+                    bcc     !+            // Yes! output it
                     adc     #6              // Add offset for letter A-F
                     jsr Screen.petToScreen
-                    cPrint()
-                    rts
-    done:
-                    .break
-                    rts
-
-    ECHO:
+    !:
                     cPrint()
                     rts
 
