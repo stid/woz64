@@ -12,39 +12,39 @@
 
 init:
                 lda #64
-                sta MemMap.KEYB2_SPACE.SYS_Lstx
-                sta MemMap.KEYB2_SPACE.SYS_Sfdx
+                sta MemMap.KEYB2.SYS_Lstx
+                sta MemMap.KEYB2.SYS_Sfdx
 
                 lda #cSYS_DelayValue
-                sta MemMap.KEYB2_SPACE.SYS_Delay
+                sta MemMap.KEYB2.SYS_Delay
 
                 lda #6
-                sta MemMap.KEYB2_SPACE.SYS_Kount
+                sta MemMap.KEYB2.SYS_Kount
 
                 lda #0
-                sta MemMap.KEYB2_SPACE.SYS_Shflag
-                sta MemMap.KEYB2_SPACE.SYS_Lstshf
+                sta MemMap.KEYB2.SYS_Shflag
+                sta MemMap.KEYB2.SYS_Lstshf
 
-                sta MemMap.KEYB2_SPACE.SYS_Ndx
+                sta MemMap.KEYB2.SYS_Ndx
 
                 lda #10
-                sta MemMap.KEYB2_SPACE.SYS_Xmax
+                sta MemMap.KEYB2.SYS_Xmax
 
                 // CLODE TO RAM
                 lda #<cloneStart
-                sta MemMap.MEMORY_SPACE.from
+                sta MemMap.MEMORY.from
                 lda #>cloneStart
-                sta MemMap.MEMORY_SPACE.from+1
+                sta MemMap.MEMORY.from+1
 
                 lda #<$1000
-                sta MemMap.MEMORY_SPACE.to
+                sta MemMap.MEMORY.to
                 lda #>$1000
-                sta MemMap.MEMORY_SPACE.to+1
+                sta MemMap.MEMORY.to+1
 
                 lda #<cloneEnd-ReadKeyb
-                sta MemMap.MEMORY_SPACE.size+1
+                sta MemMap.MEMORY.size+1
                 lda #>cloneEnd-ReadKeyb
-                sta MemMap.MEMORY_SPACE.size
+                sta MemMap.MEMORY.size
 
                 jsr Memory.clone
 
@@ -114,10 +114,10 @@ ReadKeyb:
 
                 // Clear Shift Flag
                 lda #$40
-                sta MemMap.KEYB2_SPACE.SYS_Sfdx
+                sta MemMap.KEYB2.SYS_Sfdx
 
                 lda #0
-                sta MemMap.KEYB2_SPACE.SYS_Shflag
+                sta MemMap.KEYB2.SYS_Shflag
 
                 sta CIA1_KeybWrite
                 ldx CIA1_KeybRead
@@ -127,7 +127,7 @@ ReadKeyb:
                 ldy #$00
 
                 lda #7
-                sta MemMap.KEYB2_SPACE.KeyR
+                sta MemMap.KEYB2.KeyR
 
                 lda #cKeybW_Row1
                 sta @SMC_Row + 1
@@ -155,11 +155,11 @@ ReadKeyb:
                 beq @NotShift // Stop Key
 
                 // Accumulate shift key types (SHIFT=1, COMM=2, CTRL=4)
-                ora MemMap.KEYB2_SPACE.SYS_Shflag
-                sta MemMap.KEYB2_SPACE.SYS_Shflag
+                ora MemMap.KEYB2.SYS_Shflag
+                sta MemMap.KEYB2.SYS_Shflag
                 bpl @SMC_A
 
-@NotShift:      sty MemMap.KEYB2_SPACE.SYS_Sfdx
+@NotShift:      sty MemMap.KEYB2.SYS_Sfdx
 
 @SMC_A:         lda #0
 
@@ -169,63 +169,63 @@ ReadKeyb:
 
                 sec
                 rol @SMC_Row + 1
-                dec MemMap.KEYB2_SPACE.KeyR
+                dec MemMap.KEYB2.KeyR
                 bpl @SMC_Row
 
                 jmp @ProcKeyImg
 
 // Handles the key repeat
-@Process:       ldy MemMap.KEYB2_SPACE.SYS_Sfdx
+@Process:       ldy MemMap.KEYB2.SYS_Sfdx
 @SMC_Key:       lda $FFFF,Y
                 tax
-                cpy MemMap.KEYB2_SPACE.SYS_Lstx
+                cpy MemMap.KEYB2.SYS_Lstx
                 beq @SameKey
 
                 ldy #cSYS_DelayValue
-                sty MemMap.KEYB2_SPACE.SYS_Delay     // Repeat delay counter
+                sty MemMap.KEYB2.SYS_Delay     // Repeat delay counter
                 bne @Cleanup
 
 @SameKey:       and #$7F
-                ldy MemMap.KEYB2_SPACE.SYS_Delay
+                ldy MemMap.KEYB2.SYS_Delay
                 beq @EndDelay
-                dec MemMap.KEYB2_SPACE.SYS_Delay
+                dec MemMap.KEYB2.SYS_Delay
                 bne @Exit
 
-@EndDelay:      dec MemMap.KEYB2_SPACE.SYS_Kount
+@EndDelay:      dec MemMap.KEYB2.SYS_Kount
                 bne @Exit
 
                 ldy #$04
-                sty MemMap.KEYB2_SPACE.SYS_Kount
-                ldy MemMap.KEYB2_SPACE.SYS_Ndx
+                sty MemMap.KEYB2.SYS_Kount
+                ldy MemMap.KEYB2.SYS_Ndx
                 dey
                 bpl @Exit
 
 // Updates the previous key and shift storage
-@Cleanup:       ldy MemMap.KEYB2_SPACE.SYS_Sfdx
-                sty MemMap.KEYB2_SPACE.SYS_Lstx
-                ldy MemMap.KEYB2_SPACE.SYS_Shflag
-                sty MemMap.KEYB2_SPACE.SYS_Lstshf
+@Cleanup:       ldy MemMap.KEYB2.SYS_Sfdx
+                sty MemMap.KEYB2.SYS_Lstx
+                ldy MemMap.KEYB2.SYS_Shflag
+                sty MemMap.KEYB2.SYS_Lstshf
 
                 cpx #$FF
                 beq @Exit
                 txa
-                ldx MemMap.KEYB2_SPACE.SYS_Ndx
-                cpx MemMap.KEYB2_SPACE.SYS_Xmax
+                ldx MemMap.KEYB2.SYS_Ndx
+                cpx MemMap.KEYB2.SYS_Xmax
                 bcs @Exit
 
-                sta MemMap.KEYB2_SPACE.SYS_Keyd,X
+                sta MemMap.KEYB2.SYS_Keyd,X
                 inx
-                stx MemMap.KEYB2_SPACE.SYS_Ndx
+                stx MemMap.KEYB2.SYS_Ndx
 
 @Exit:          lda #$7F
                 sta CIA1_KeybWrite
                 rts
 
 @ProcKeyImg:
-                lda MemMap.KEYB2_SPACE.SYS_Shflag
+                lda MemMap.KEYB2.SYS_Shflag
                 cmp #$03 // C= + SHIFT
                 bne @SetDecodeTable
-                cmp MemMap.KEYB2_SPACE.SYS_Lstshf
+                cmp MemMap.KEYB2.SYS_Lstshf
                 beq @Exit
 
 @SetDecodeTable:
@@ -241,21 +241,21 @@ ReadKeyb:
                 jmp @Process
 
 // --------------------------
-GetKey:         lda MemMap.KEYB2_SPACE.SYS_Ndx
+GetKey:         lda MemMap.KEYB2.SYS_Ndx
                 bne @IsKey
 
 @NoKey:         lda #255 // Null
                 sec
                 rts
 
-@IsKey:         ldy MemMap.KEYB2_SPACE.SYS_Keyd
+@IsKey:         ldy MemMap.KEYB2.SYS_Keyd
                 ldx #0
-@Loop:          lda MemMap.KEYB2_SPACE.SYS_Keyd + 1,X
-                sta MemMap.KEYB2_SPACE.SYS_Keyd,X
+@Loop:          lda MemMap.KEYB2.SYS_Keyd + 1,X
+                sta MemMap.KEYB2.SYS_Keyd,X
                 inx
-                cpx MemMap.KEYB2_SPACE.SYS_Ndx
+                cpx MemMap.KEYB2.SYS_Ndx
                 bne @Loop
-                dec MemMap.KEYB2_SPACE.SYS_Ndx
+                dec MemMap.KEYB2.SYS_Ndx
                 tya
                 clc
                 rts

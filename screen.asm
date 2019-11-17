@@ -15,7 +15,9 @@
 }
 
 .macro cPrint() {
+        sty MemMap.SCREEN.cTempY
         jsr Screen.printChar
+        ldy MemMap.SCREEN.cTempY
 }
 
 .macro ClearScreen(screen, clearByte) {
@@ -94,13 +96,13 @@
 
 init: {
                 lda #$00
-                sta MemMap.SCREEN_SPACE.CursorCol
-                sta MemMap.SCREEN_SPACE.CursorRow
+                sta MemMap.SCREEN.CursorCol
+                sta MemMap.SCREEN.CursorRow
                 rts
 }
 
 printChar: {
-                stx MemMap.SCREEN_SPACE.tempX
+                stx MemMap.SCREEN.tempX
                 // New Line
                 cmp #$8e
                 bne.r !+
@@ -110,47 +112,47 @@ printChar: {
 !:
                 // Store Base Video Address 16 bit
                 ldx #<constants.VIDEO_ADDR         // Low byte
-                stx MemMap.SCREEN_SPACE.TempVideoPointer
+                stx MemMap.SCREEN.TempVideoPointer
                 ldx #>constants.VIDEO_ADDR         // High byte
-                stx MemMap.SCREEN_SPACE.TempVideoPointer+1
+                stx MemMap.SCREEN.TempVideoPointer+1
 
                 // Temp Save Y
-                sty MemMap.SCREEN_SPACE.tempY
+                sty MemMap.SCREEN.tempY
 
                 //  CursorRow * 40
-                ldy MemMap.SCREEN_SPACE.CursorRow
-                sty MemMap.MATH_SPACE.factor1
+                ldy MemMap.SCREEN.CursorRow
+                sty MemMap.MATH.factor1
                 ldy #constants.COLUMN_NUM
-                sty MemMap.MATH_SPACE.factor2
+                sty MemMap.MATH.factor2
                 jsr Math.multiply
 
                 //  Add mul result to TempVideoPointer
                 clc
                 pha
-                lda MemMap.MATH_SPACE.result
-                adc MemMap.SCREEN_SPACE.TempVideoPointer+1
-                sta MemMap.SCREEN_SPACE.TempVideoPointer+1
-                lda MemMap.MATH_SPACE.result+1
-                adc MemMap.SCREEN_SPACE.TempVideoPointer
-                sta MemMap.SCREEN_SPACE.TempVideoPointer
+                lda MemMap.MATH.result
+                adc MemMap.SCREEN.TempVideoPointer+1
+                sta MemMap.SCREEN.TempVideoPointer+1
+                lda MemMap.MATH.result+1
+                adc MemMap.SCREEN.TempVideoPointer
+                sta MemMap.SCREEN.TempVideoPointer
                 pla
 
                 // Add column
-                ldy MemMap.SCREEN_SPACE.CursorCol
-                sta (MemMap.SCREEN_SPACE.TempVideoPointer), y
+                ldy MemMap.SCREEN.CursorCol
+                sta (MemMap.SCREEN.TempVideoPointer), y
 
-                ldy MemMap.SCREEN_SPACE.tempY
+                ldy MemMap.SCREEN.tempY
                 iny
 
-                inc MemMap.SCREEN_SPACE.CursorCol
-                lda MemMap.SCREEN_SPACE.CursorCol
+                inc MemMap.SCREEN.CursorCol
+                lda MemMap.SCREEN.CursorCol
                 cmp #constants.COLUMN_NUM+1
                 bcc.r exita
 
                 // CursorCol > COLUMN_NUM ? new line
                 jsr screenNewLine
 exita:
-                ldx MemMap.SCREEN_SPACE.tempX
+                ldx MemMap.SCREEN.tempX
                 rts
 
 }
@@ -167,10 +169,10 @@ exita:
 //   ——————————————————————————————————————————————————————
 print: {
                 ldy #$00
-                sta MemMap.SCREEN_SPACE.TempStringPointer
-                stx MemMap.SCREEN_SPACE.TempStringPointer+1
+                sta MemMap.SCREEN.TempStringPointer
+                stx MemMap.SCREEN.TempStringPointer+1
     printLoop:
-                lda (MemMap.SCREEN_SPACE.TempStringPointer), y
+                lda (MemMap.SCREEN.TempStringPointer), y
                 cmp #0
                 beq exit
                 jsr Screen.printChar
@@ -181,8 +183,8 @@ print: {
 
 screenNewLine: {
                 lda #0
-                sta MemMap.SCREEN_SPACE.CursorCol
-                inc MemMap.SCREEN_SPACE.CursorRow
+                sta MemMap.SCREEN.CursorCol
+                inc MemMap.SCREEN.CursorRow
                 rts
 }
 

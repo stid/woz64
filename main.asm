@@ -17,6 +17,7 @@ BasicUpstart2(start)
 #import "screen.asm"
 #import "keyb2.asm"
 #import "hex.asm"
+#import "shell.asm"
 
 
 * = * "Kernel Start"
@@ -38,19 +39,25 @@ start:
 
 loop:
                 lda #$FF
-Raster:        cmp $D012
+Raster:         cmp $D012
 	            bne Raster
                 jsr Keyboard2.ReadKeyb
                 jsr Keyboard2.GetKey
                 bcs Skip
+                cmp #$0d
+                bne inputChar
 
-                .break
-
-
+                // Execute Item
+                jsr Shell.push
+                jsr Shell.wozExec
+                lda #$0d
                 jsr Screen.petToScreen
-                //jsr Hex.byteToHex
-                //cPrint()
-                //txa
+                cPrint()
+                jsr Shell.clear
+                jmp loop
+inputChar:     
+                jsr Shell.push
+                jsr Screen.petToScreen
 
                 cPrint()
 
@@ -65,6 +72,7 @@ initApp: {
                 SetBackgroundColor(constants.BORDER_COLOR)
                 jsr Screen.init
                 jsr Keyboard2.init
+                jsr Shell.init
                 rts
 }
 
