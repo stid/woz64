@@ -1,4 +1,4 @@
-///BasicUpstart2(start)
+BasicUpstart2(start)
 
 * = $8000 "Main"
 
@@ -54,9 +54,8 @@ Raster:         cmp $D012
                 jsr Screen.screenNewLine
                 jsr Shell.clear
                 jmp loop
-inputChar:     
+inputChar:
                 jsr Shell.push
-                jsr Screen.petToScreen
                 cPrint()
 
 

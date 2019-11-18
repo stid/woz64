@@ -8,7 +8,7 @@
 
 .const  CR =  $0d
 
-
+clear:
 init: {
     lda #-1
     sta MemMap.SHELL.pos
@@ -16,45 +16,37 @@ init: {
 }
 
 push: {
-                    ldy MemMap.SHELL.pos
+                    ldy     MemMap.SHELL.pos
                     iny
-                    cpy #127
-                    beq done
-                    sty  MemMap.SHELL.pos
-                    sta  MemMap.SHELL.buffer, y
+                    cpy     #127
+                    beq.r   done
+                    sty     MemMap.SHELL.pos
+                    sta     MemMap.SHELL.buffer, y
     done:
-                    rts
-}
-
-clear: {
-                    ldy #-1
-                    sty MemMap.SHELL.pos
                     rts
 }
 
 
 // WOZ MONITOR FLOW - FROM APPLE1
 wozExec: {
-                    ldy #-1
-                    lda #0
+                    ldy     #-1
+                    lda     #0
                     tax
-
     SETSTOR:
                     asl
-    SETMODE:        
-                    cmp #0
-                    beq !+
-                    eor #%10000000
+    SETMODE:
+                    cmp     #0
+                    beq.r   !+
+                    eor     #%10000000
 !:
-                    sta MemMap.SHELL.MODE
+                    sta     MemMap.SHELL.MODE
 
     BLSKIP:         iny
 
-    NEXTITEM:       
-                    .break
+    NEXTITEM:
                     lda     MemMap.SHELL.buffer,Y   //Get character
-                    cmp     #$0d
-                    bne     CONT                    // We're done if it's CR!
+                    cmp     #CR
+                    bne.r   CONT                    // We're done if it's CR!
                     rts
     CONT:
                     cmp     #'.'
@@ -70,8 +62,8 @@ wozExec: {
 
 // Here we're trying to parse a new hex value
 
-    NEXTHEX:            
-                    lda     MemMap.SHELL.buffer,y       // Get character for hex test
+    NEXTHEX:
+                    lda     MemMap.SHELL.buffer,y   // Get character for hex test
                     eor     #$30                    // Map digits to 0-9
                     cmp     #9+1                    // Is it a decimal digit?
                     bcc     DIG                     // Yes!
@@ -79,27 +71,27 @@ wozExec: {
                     cmp     #$FA                    // Hex letter?
                     bcc     NOTHEX                  // No! Character not hex
 
-    DIG:            
+    DIG:
                     asl
                     asl                             // Hex digit to MSD of A
                     asl
                     asl
 
-                    ldx     #4              // Shift count
-    HEXSHIFT:           asl                     // Hex digit left, MSB to carry
-                    rol     MemMap.SHELL.L               // Rotate into LSD
-                    rol     MemMap.SHELL.H               // Rotate into MSD's
-                    dex                     // Done 4 shifts?
-                    bne     HEXSHIFT        // No, loop
-                    iny                     // Advance text index
-                    bne     NEXTHEX         // Always taken
+                    ldx     #4                      // Shift count
+    HEXSHIFT:       asl                             // Hex digit left, MSB to carry
+                    rol     MemMap.SHELL.L          // Rotate into LSD
+                    rol     MemMap.SHELL.H          // Rotate into MSD's
+                    dex                             // Done 4 shifts?
+                    bne     HEXSHIFT                // No, loop
+                    iny                             // Advance text index
+                    bne     NEXTHEX                 // Always taken
 
-NOTHEX:             cpy     MemMap.SHELL.YSAV            //Was at least 1 hex digit given?
+NOTHEX:             cpy     MemMap.SHELL.YSAV       //Was at least 1 hex digit given?
                     bne     !+                      // No! Ignore all, start from scratch
                     rts
 !:
-                    bit     MemMap.SHELL.MODE            //Test MODE byte
-                    bvc     NOTSTOR         // B6=0 is STOR, 1 is XAM or BLOCK XAM
+                    bit     MemMap.SHELL.MODE       //Test MODE byte
+                    bvc     NOTSTOR                 // B6=0 is STOR, 1 is XAM or BLOCK XAM
 
 // STOR mode, save LSD of new hex byte
 
@@ -120,59 +112,59 @@ RUN:                jmp     (MemMap.SHELL.XAML)          // Run user's program
 //  We're not in Store mode
 //-------------------------------------------------------------------------
 
-NOTSTOR:            bmi     XAMNEXT         // B7 = 0 for XAM, 1 for BLOCK XAM
+NOTSTOR:            bmi     XAMNEXT                     // B7 = 0 for XAM, 1 for BLOCK XAM
 
 // We're in XAM mode now
 
-                    ldx     #2              // Copy 2 bytes
-SETADR:             lda     MemMap.SHELL.L-1,X           // Copy hex data to
-                    sta     MemMap.SHELL.STL-1,X          // 'store index'
-                    sta     MemMap.SHELL.XAML-1,X         // and to 'XAM index'
-                    dex                     // Next of 2 bytes
-                    bne     SETADR          // Loop unless X = 0
+                    ldx     #2                          // Copy 2 bytes
+SETADR:             lda     MemMap.SHELL.L-1,X          // Copy hex data to
+                    sta     MemMap.SHELL.STL-1,X        // 'store index'
+                    sta     MemMap.SHELL.XAML-1,X       // and to 'XAM index'
+                    dex                                 // Next of 2 bytes
+                    bne     SETADR                      // Loop unless X = 0
 
 // Print address and data from this address, fall through next BNE.
 
-NXTPRNT:            bne     PRDATA          // NE means no address to print
-                    lda     #$8e             // Print CR first
+NXTPRNT:            bne     PRDATA                      // NE means no address to print
+                    lda     #CR                         // Print CR first
                     cPrint()
-                    lda      MemMap.SHELL.XAMH           // Output high-order byte of address
+                    lda      MemMap.SHELL.XAMH          // Output high-order byte of address
                     jsr     PRBYTE
-                    lda      MemMap.SHELL.XAML           // Output low-order byte of address
+                    lda      MemMap.SHELL.XAML          // Output low-order byte of address
                     jsr     PRBYTE
-                    lda     #':'           // Print colon
+                    lda     #':'                        // Print colon
                     cPrint()
 
-PRDATA:             lda     #' '            // Print space
+PRDATA:             lda     #' '                        // Print space
                     cPrint()
                     lda     (MemMap.SHELL.XAML,X)       // Get data from address (X=0)
-                    jsr     PRBYTE         // Output it in hex format
-XAMNEXT:            stx     MemMap.SHELL.MODE            // 0 -> MODE (XAM mode).
-                    lda     MemMap.SHELL.XAML            // See if there's more to print
+                    jsr     PRBYTE                      // Output it in hex format
+XAMNEXT:            stx     MemMap.SHELL.MODE           // 0 -> MODE (XAM mode).
+                    lda     MemMap.SHELL.XAML           // See if there's more to print
                     cmp     MemMap.SHELL.L
                     lda     MemMap.SHELL.XAMH
                     sbc     MemMap.SHELL.H
-                    bcs     TONEXTITEM     // Not less! No more data to output
+                    bcs     TONEXTITEM                  // Not less! No more data to output
 
                     inc     MemMap.SHELL.XAML           // Increment 'examine index'
-                    bne     MOD8CHK         // No carry!
+                    bne     MOD8CHK                     // No carry!
                     inc     MemMap.SHELL.XAMH
 
-MOD8CHK:            lda     MemMap.SHELL.XAML            // If address MOD 8 = 0 start new line
+MOD8CHK:            lda     MemMap.SHELL.XAML           // If address MOD 8 = 0 start new line
                     and     #%00000111
-                    bpl     NXTPRNT         // Always taken.
+                    bpl     NXTPRNT                     // Always taken.
 
 // -------------------------------------------------------------------------
 //   Subroutine to print a byte in A in hex form (destructive)
 // -------------------------------------------------------------------------
 
-PRBYTE:             pha                     // Save A for LSD
+PRBYTE:             pha                                 // Save A for LSD
                     lsr
                     lsr
-                    lsr                    // MSD to LSD position
+                    lsr                                 // MSD to LSD position
                     lsr
-                    jsr     PRHEX           // Output hex digit
-                    pla                     // Restore A
+                    jsr     PRHEX                       // Output hex digit
+                    pla                                 // Restore A
 
 // Fall through to print hex routine
 
@@ -180,12 +172,11 @@ PRBYTE:             pha                     // Save A for LSD
 //   Subroutine to print a hexadecimal digit
 // -------------------------------------------------------------------------
 
-PRHEX:              and     #%00001111     // Mask LSD for hex print
-                    ora     #'0'            // Add "0"
-                    cmp     #'9'+1          // Is it a decimal digit?
-                    bcc     !+            // Yes! output it
-                    adc     #6              // Add offset for letter A-F
-                    jsr Screen.petToScreen
+PRHEX:              and     #%00001111                  // Mask LSD for hex print
+                    ora     #'0'                        // Add "0"
+                    cmp     #'9'+1                      // Is it a decimal digit?
+                    bcc     !+                          // Yes! output it
+                    adc     #6                          // Add offset for letter A-F
     !:
                     cPrint()
                     rts

@@ -11,14 +11,16 @@
     .label  CursorRow                       = ZPAGE_BASE+5    // 1 byte
     .label  tempY                           = ZPAGE_BASE+6    // 1 byte
     .label  tempX                           = ZPAGE_BASE+7    // 1 byte
-    .label  cTempY                          = ZPAGE_BASE+8    // 1 byte
+    .label  PrintPetCharY                   = ZPAGE_BASE+8    // 1 byte
+    .label  PrintPetCharX                   = ZPAGE_BASE+9    // 1 byte
+    .label  ScrollUpTriggered               = ZPAGE_BASE+10    // 1 byte
 }
 
 .namespace MATH {
-    .label  factor1                         = ZPAGE_BASE+9    // 1 byte
-    .label  factor2                         = ZPAGE_BASE+10    // 1 byte
-    .label  multiTmpX                       = ZPAGE_BASE+11    // 1 byte
-    .label  result                          = ZPAGE_BASE+12   // 2 bytes
+    .label  factor1                         = ZPAGE_BASE+11    // 1 byte
+    .label  factor2                         = ZPAGE_BASE+12    // 1 byte
+    .label  multiTmpX                       = ZPAGE_BASE+13    // 1 byte
+    .label  result                          = ZPAGE_BASE+14   // 2 bytes
 }
 
 .namespace KEYB2 {
@@ -36,7 +38,7 @@
 
 .namespace MEMORY {
     .label from                             = ZPAGE_BASE+56 // 2 bytes
-    .label to                               = ZPAGE_BASE+58 // 2 bytes
+    .label dest                             = ZPAGE_BASE+58 // 2 bytes
     .label size                             = ZPAGE_BASE+60 // 2 bytes
 }
 
@@ -46,8 +48,8 @@
     .label L                                 = ZPAGE_BASE+64 // 1 bytes
     .label H                                 = ZPAGE_BASE+65 // 1 bytes
     .label YSAV                              = ZPAGE_BASE+66 // 1 bytes
-    .label STL                               = ZPAGE_BASE+67 // 1 bytes                     
-    .label STH                               = ZPAGE_BASE+68 // 1 bytes      
+    .label STL                               = ZPAGE_BASE+67 // 1 bytes
+    .label STH                               = ZPAGE_BASE+68 // 1 bytes
     .label XAML                              = ZPAGE_BASE+69 // 1 bytes
     .label XAMH                              = ZPAGE_BASE+70 // 1 bytes
 

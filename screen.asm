@@ -1,6 +1,7 @@
 #importonce
 #import "math.asm"
 #import "mem_map.asm"
+#import "memory.asm"
 
 // -----------------------
 // MACROS
@@ -15,53 +16,51 @@
 }
 
 .macro cPrint() {
-        sty MemMap.SCREEN.cTempY
-        jsr Screen.printChar
-        ldy MemMap.SCREEN.cTempY
+        jsr Screen.printPetChar
 }
 
 .macro ClearScreen(screen, clearByte) {
-	lda #clearByte
-	ldx #0
+	lda     #clearByte
+	ldx     #0
 !loop:
-	sta screen, x
-	sta screen + $100, x
-	sta screen + $200, x
-	sta screen + $300, x
+	sta     screen, x
+	sta     screen + $100, x
+	sta     screen + $200, x
+	sta     screen + $300, x
 	inx
-	bne.r !loop-
+	bne.r   !loop-
 }
 
 .macro ClearColorRam(clearByte) {
-	lda #clearByte
-	ldx #0
+	lda     #clearByte
+	ldx     #0
 !loop:
-	sta $D800, x
-	sta $D800 + $100, x
-	sta $D800 + $200, x
-	sta $D800 + $300, x
+	sta     $D800, x
+	sta     $D800 + $100, x
+	sta     $D800 + $200, x
+	sta     $D800 + $300, x
 	inx
-	bne.r !loop-
+	bne.r   !loop-
 }
 
 .macro SetBorderColor(color) {
-	lda #color
-	sta $d020
+	lda     #color
+	sta     $d020
 }
 
 .macro SetBackgroundColor(color) {
-	lda #color
-	sta $d021
+	lda     #color
+	sta     $d021
 }
 
 .macro SetMultiColor1(color) {
-	lda #color
-	sta $d022
+	lda     #color
+	sta     $d022
 }
 
 .macro SetMultiColor2(color) {
-	lda #color
-	sta $d023
+	lda     #color
+	sta     $d023
 }
 
 .macro SetMultiColorMode() {
@@ -71,9 +70,9 @@
 }
 
 .macro SetScrollMode() {
-	lda $D016
-	eor #%00001000
-	sta $D016
+	lda     $D016
+	eor     #%00001000
+	sta     $D016
 }
 
 .filenamespace Screen
@@ -83,11 +82,9 @@
 // CONSTANTS
 // -----------------------
 
-.namespace constants {
-    .label  VIDEO_ADDR           = $0400
-    .label  COLUMN_NUM           = 40
-    .label  ROWS_NUM             = 25
-}
+.const  VIDEO_ADDR      = $0400
+.const  COLUMN_NUM      = 40
+.const  ROWS_NUM        = 25
 
 
 // -----------------------
@@ -95,66 +92,107 @@
 // -----------------------
 
 init: {
-                lda #$00
-                sta MemMap.SCREEN.CursorCol
-                sta MemMap.SCREEN.CursorRow
-                rts
+        lda     #$00
+        sta     MemMap.SCREEN.CursorCol
+        sta     MemMap.SCREEN.CursorRow
+        rts
+}
+
+scrollUp: {
+        pha
+        clone(VIDEO_ADDR+40, VIDEO_ADDR+(COLUMN_NUM*(ROWS_NUM)), VIDEO_ADDR)
+        lda #32
+        ldx #00
+!:
+        sta VIDEO_ADDR+(COLUMN_NUM*(ROWS_NUM-1)), x
+        inx
+        cpx #40
+        bne !-
+        dec     MemMap.SCREEN.CursorRow
+        pla
+        rts
+}
+
+printPetChar: {
+        pha
+        stx     MemMap.SCREEN.PrintPetCharX
+        sty     MemMap.SCREEN.PrintPetCharY
+        jsr     Screen.petToScreen
+        jsr     Screen.printChar
+        ldy     MemMap.SCREEN.PrintPetCharY
+        ldx     MemMap.SCREEN.PrintPetCharX
+        pla
+        rts
 }
 
 printChar: {
-                stx MemMap.SCREEN.tempX
+                stx     MemMap.SCREEN.tempX
                 // New Line
-                cmp #$8e
-                bne.r !+
-                jsr screenNewLine
+                cmp     #$8e
+                bne.r   !+
+                jsr     screenNewLine
                 iny
                 rts
 !:
                 // Store Base Video Address 16 bit
-                ldx #<constants.VIDEO_ADDR         // Low byte
-                stx MemMap.SCREEN.TempVideoPointer
-                ldx #>constants.VIDEO_ADDR         // High byte
-                stx MemMap.SCREEN.TempVideoPointer+1
+                ldx     #<VIDEO_ADDR         // Low byte
+                stx     MemMap.SCREEN.TempVideoPointer
+                ldx     #>VIDEO_ADDR         // High byte
+                stx     MemMap.SCREEN.TempVideoPointer+1
 
                 // Temp Save Y
-                sty MemMap.SCREEN.tempY
+                sty     MemMap.SCREEN.tempY
 
                 //  CursorRow * 40
-                ldy MemMap.SCREEN.CursorRow
-                sty MemMap.MATH.factor1
-                ldy #constants.COLUMN_NUM
-                sty MemMap.MATH.factor2
-                jsr Math.multiply
+                ldy     MemMap.SCREEN.CursorRow
+                sty     MemMap.MATH.factor1
+                ldy     #COLUMN_NUM
+                sty     MemMap.MATH.factor2
+                jsr     Math.multiply
 
                 //  Add mul result to TempVideoPointer
                 clc
                 pha
-                lda MemMap.MATH.result
-                adc MemMap.SCREEN.TempVideoPointer+1
-                sta MemMap.SCREEN.TempVideoPointer+1
-                lda MemMap.MATH.result+1
-                adc MemMap.SCREEN.TempVideoPointer
-                sta MemMap.SCREEN.TempVideoPointer
+                lda     MemMap.MATH.result
+                adc     MemMap.SCREEN.TempVideoPointer+1
+                sta     MemMap.SCREEN.TempVideoPointer+1
+                lda     MemMap.MATH.result+1
+                adc     MemMap.SCREEN.TempVideoPointer
+                sta     MemMap.SCREEN.TempVideoPointer
+
+                ldy     MemMap.SCREEN.CursorCol
+                cpy     #COLUMN_NUM                     // Is this > col num?
+                bcc.r   noEndOfLine
+                jsr     screenNewLine                   // Yes? Add new list first
+
+                ldy     #1
+                cpy     MemMap.SCREEN.ScrollUpTriggered
+                bne     noScrollTriggered
+                .break
+
+                // Compesat Scroll
+                sec
+                lda     MemMap.SCREEN.TempVideoPointer
+                sbc     #1
+                sta     MemMap.SCREEN.TempVideoPointer
+                bcs     !+
+                dec     MemMap.SCREEN.TempVideoPointer+1
+                !:
+
+
+noScrollTriggered:
+noEndOfLine:
                 pla
 
-                // Add column
-                ldy MemMap.SCREEN.CursorCol
-                sta (MemMap.SCREEN.TempVideoPointer), y
-
-                ldy MemMap.SCREEN.tempY
+                // insert into screen
+                sta     (MemMap.SCREEN.TempVideoPointer), y
+                ldy     MemMap.SCREEN.tempY
                 iny
+                inc     MemMap.SCREEN.CursorCol
 
-                inc MemMap.SCREEN.CursorCol
-                lda MemMap.SCREEN.CursorCol
-                cmp #constants.COLUMN_NUM+1
-                bcc.r exita
-
-                // CursorCol > COLUMN_NUM ? new line
-                jsr screenNewLine
-exita:
-                ldx MemMap.SCREEN.tempX
+exit:
+                ldx     MemMap.SCREEN.tempX
                 rts
-
 }
 
 
@@ -168,23 +206,37 @@ exita:
 //   returned values: none
 //   ——————————————————————————————————————————————————————
 print: {
-                ldy #$00
-                sta MemMap.SCREEN.TempStringPointer
-                stx MemMap.SCREEN.TempStringPointer+1
+                ldy     #$00
+                sta     MemMap.SCREEN.TempStringPointer
+                stx     MemMap.SCREEN.TempStringPointer+1
     printLoop:
-                lda (MemMap.SCREEN.TempStringPointer), y
-                cmp #0
-                beq exit
-                jsr Screen.printChar
-                jmp printLoop
+                lda     (MemMap.SCREEN.TempStringPointer), y
+                cmp     #0
+                beq     exit
+                jsr     Screen.printChar
+                jmp     printLoop
     exit:
                 rts
 }
 
 screenNewLine: {
-                lda #0
-                sta MemMap.SCREEN.CursorCol
-                inc MemMap.SCREEN.CursorRow
+                pha
+                lda     #0
+                sta     MemMap.SCREEN.CursorCol
+                lda     #ROWS_NUM-1
+                cmp     MemMap.SCREEN.CursorRow         // Are we at the screen bottom?
+                bne     noScrollUp
+                jsr     Screen.scrollUp
+                lda     #1                 // Yes - Scroll up
+                sta     MemMap.SCREEN.ScrollUpTriggered
+                jmp     done
+
+noScrollUp:
+                lda     #0
+                sta     MemMap.SCREEN.ScrollUpTriggered
+done:
+                inc     MemMap.SCREEN.CursorRow
+                pla
                 rts
 }
 
@@ -199,65 +251,55 @@ screenNewLine: {
 //   ————————————————————————————————————————
 petToScreen: {
         // $00-$1F
-                        cmp #$1f
-                        bcs !+
-                        sec
-                        adc #128
-                        jmp convDone
-
+                cmp     #$1f
+                bcs     !+
+                sec
+                adc     #128
+                jmp     convDone
         // $20-$3F
         !:
-                        cmp #$3f
-                        bcs !+
-                        jmp convDone
-
+                cmp     #$3f
+                bcs     !+
+                jmp     convDone
         // $40-$5F
         !:
-                        cmp #$5f
-                        bcs !+
-                        sec
-                        sbc #$40
-                        jmp convDone
-
-
+                cmp     #$5f
+                bcs     !+
+                sec
+                sbc     #$40
+                jmp     convDone
         // $60-$7F
         !:
-                        cmp #$7F
-                        bcs !+
-                        sec
-                        sbc #32
-                        jmp convDone
-
+                cmp     #$7F
+                bcs     !+
+                sec
+                sbc     #32
+                jmp     convDone
         // $80-$9F
         !:
-                        cmp #$9F
-                        bcs !+
-                        sec
-                        adc #64
-                        jmp convDone
+                cmp     #$9F
+                bcs     !+
+                sec
+                adc     #64
+                jmp     convDone
         // $A0-$BF
         !:
-                        cmp #$BF
-                        bcs !+
-                        sec
-                        sbc #64
-                        jmp convDone
-
+                cmp     #$BF
+                bcs     !+
+                sec
+                sbc     #64
+                jmp     convDone
         // $C0-$DF
         // $E0-$FE
         !:
-                        cmp #$FE
-                        bcs !+
-                        sec
-                        sbc #128
-                        jmp convDone
-
+                cmp     #$FE
+                bcs     !+
+                sec
+                sbc     #128
+                jmp     convDone
         // $FF
         !:
-                        lda $5E
-
-
+                lda     $5E
         convDone:
-                        rts
-
+                rts
 }

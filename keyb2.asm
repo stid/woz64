@@ -10,7 +10,7 @@
 .const cSYS_DelayValue   = 32
 .const cKeybW_Row1       = $FE
 
-init:
+init: {
                 lda #64
                 sta MemMap.KEYB2.SYS_Lstx
                 sta MemMap.KEYB2.SYS_Sfdx
@@ -31,24 +31,9 @@ init:
                 sta MemMap.KEYB2.SYS_Xmax
 
                 // CLODE TO RAM
-                lda #<cloneStart
-                sta MemMap.MEMORY.from
-                lda #>cloneStart
-                sta MemMap.MEMORY.from+1
-
-                lda #<$1000
-                sta MemMap.MEMORY.to
-                lda #>$1000
-                sta MemMap.MEMORY.to+1
-
-                lda #<cloneEnd-ReadKeyb
-                sta MemMap.MEMORY.size+1
-                lda #>cloneEnd-ReadKeyb
-                sta MemMap.MEMORY.size
-
-                jsr Memory.clone
-
+                clone(cloneStart, cloneEnd, $1000)
                 rts
+}
 
 KeyMapVec:
     .word KeyMap1, KeyMap2, KeyMap3, KeyMap4
@@ -259,8 +244,10 @@ GetKey:         lda MemMap.KEYB2.SYS_Ndx
                 tya
                 clc
                 rts
+}
 
 
+
+* = * "Keyb: cloneEnd"
 
 cloneEnd:
-}
