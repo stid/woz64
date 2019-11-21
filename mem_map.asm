@@ -19,8 +19,7 @@
 .namespace MATH {
     .label  factor1                         = ZPAGE_BASE+11    // 1 byte
     .label  factor2                         = ZPAGE_BASE+12    // 1 byte
-    .label  multiTmpX                       = ZPAGE_BASE+13    // 1 byte
-    .label  result                          = ZPAGE_BASE+14   // 2 bytes
+    .label  result                          = ZPAGE_BASE+13   // 2 bytes
 }
 
 .namespace KEYB2 {

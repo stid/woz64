@@ -7,6 +7,7 @@
 * = * "Shell Routines"
 
 .const  CR =  $0d
+.const  R  =  $52
 
 clear:
 init: {
@@ -22,6 +23,16 @@ push: {
                     beq.r   done
                     sty     MemMap.SHELL.pos
                     sta     MemMap.SHELL.buffer, y
+    done:
+                    rts
+}
+
+backspace: {
+                    ldy     MemMap.SHELL.pos
+                    cpy     #-1
+                    beq     done
+                    dey
+                    sty     MemMap.SHELL.pos
     done:
                     rts
 }
@@ -54,7 +65,7 @@ wozExec: {
                     beq     SETMODE                 // Set BLOCK XAM mode ("." = $AE)
                     cmp     #':'
                     beq     SETSTOR                 // Set STOR mode! $BA will become $7B
-                    cmp     #'r'
+                    cmp     #R
                     beq     RUN                     // Run the program! Forget the rest
                     stx     MemMap.SHELL.L          // Clear input value (X=0)
                     stx     MemMap.SHELL.H

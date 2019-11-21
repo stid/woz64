@@ -5,9 +5,14 @@
 
 * = * "Math Routines"
 
+
+//------------------------------------------------------------------------------------
 multiply: {
-                stx MemMap.MATH.multiTmpX
+                sei
                 pha
+                txa
+                pha
+
                 lda #$00
                 ldx #$08
                 clc
@@ -24,8 +29,8 @@ multiply: {
                 stx MemMap.MATH.result+1
 
                 pla
-                ldx MemMap.MATH.multiTmpX
-
+                tax
+                pla
+                cli
                 rts
-
 }

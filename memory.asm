@@ -1,5 +1,4 @@
 #importonce
-
 #import "mem_map.asm"
 
 * = * "Memory Routines"
@@ -33,6 +32,7 @@
 //   size = number of bytes to move
 //
 _clone: {
+                sei
                 ldy #0
                 ldx MemMap.MEMORY.size
                 beq md2
@@ -51,5 +51,6 @@ md3:            lda (MemMap.MEMORY.from),y // move the remaining bytes
                 iny
                 dex
                 bne md3
+                cli
 md4:            rts
 }

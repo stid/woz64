@@ -85,6 +85,9 @@
 .const  VIDEO_ADDR      = $0400
 .const  COLUMN_NUM      = 40
 .const  ROWS_NUM        = 25
+.const  CR              = $8e
+.const  BS              = $95
+
 
 
 // -----------------------
@@ -128,11 +131,18 @@ printPetChar: {
 printChar: {
                 stx     MemMap.SCREEN.tempX
                 // New Line
-                cmp     #$8e
+                cmp     #CR
                 bne.r   !+
                 jsr     screenNewLine
                 iny
-                rts
+                jmp     exit
+!:
+                cmp     #BS
+                bne.r   !+
+                ldx     MemMap.SCREEN.CursorCol
+                cmp     #0
+                beq     exit
+                dec     MemMap.SCREEN.CursorCol
 !:
                 // Store Base Video Address 16 bit
                 ldx     #<VIDEO_ADDR         // Low byte
@@ -168,22 +178,29 @@ printChar: {
                 ldy     #1
                 cpy     MemMap.SCREEN.ScrollUpTriggered
                 bne     noScrollTriggered
-                .break
 
-                // Compesat Scroll
+                // Compensate Scroll
                 sec
                 lda     MemMap.SCREEN.TempVideoPointer
                 sbc     #1
                 sta     MemMap.SCREEN.TempVideoPointer
                 bcs     !+
                 dec     MemMap.SCREEN.TempVideoPointer+1
-                !:
+!:
 
 
 noScrollTriggered:
 noEndOfLine:
                 pla
 
+                // This is a backspace
+                cmp #BS
+                bne !+
+                lda #' '
+                sta     (MemMap.SCREEN.TempVideoPointer), y
+                jmp exit
+
+!:
                 // insert into screen
                 sta     (MemMap.SCREEN.TempVideoPointer), y
                 ldy     MemMap.SCREEN.tempY
@@ -218,6 +235,8 @@ print: {
     exit:
                 rts
 }
+
+
 
 screenNewLine: {
                 pha
