@@ -1,7 +1,6 @@
 #importonce
 .filenamespace Shell
 
-#import "mem_map.asm"
 #import "screen.asm"
 
 * = * "Shell Routines"
@@ -9,11 +8,12 @@
 .const  CR =  $0d
 .const  R  =  $52
 
+
 clear:
 init: {
-    lda #-1
-    sta MemMap.SHELL.pos
-    rts
+                    lda #-1
+                    sta MemMap.SHELL.pos
+                    rts
 }
 
 push: {
@@ -97,7 +97,7 @@ wozExec: {
                     iny                             // Advance text index
                     bne     NEXTHEX                 // Always taken
 
-NOTHEX:             cpy     MemMap.SHELL.YSAV       //Was at least 1 hex digit given?
+    NOTHEX:         cpy     MemMap.SHELL.YSAV       //Was at least 1 hex digit given?
                     bne     !+                      // No! Ignore all, start from scratch
                     rts
 !:
@@ -139,9 +139,9 @@ SETADR:             lda     MemMap.SHELL.L-1,X          // Copy hex data to
 NXTPRNT:            bne     PRDATA                      // NE means no address to print
                     lda     #CR                         // Print CR first
                     cPrint()
-                    lda      MemMap.SHELL.XAMH          // Output high-order byte of address
+                    lda     MemMap.SHELL.XAMH          // Output high-order byte of address
                     jsr     PRBYTE
-                    lda      MemMap.SHELL.XAML          // Output low-order byte of address
+                    lda     MemMap.SHELL.XAML          // Output low-order byte of address
                     jsr     PRBYTE
                     lda     #':'                        // Print colon
                     cPrint()
@@ -193,3 +193,5 @@ PRHEX:              and     #%00001111                  // Mask LSD for hex prin
                     rts
 
 }
+
+#import "mem_map.asm"

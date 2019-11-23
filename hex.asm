@@ -1,5 +1,4 @@
 #importonce
-#import "mem_map.asm"
 .filenamespace Hex
 
 * = * "Hex Routines"
@@ -25,7 +24,7 @@ byteToHex:      pha                   //save byte
                 lsr
                 pha                   //save msn
                 txa                   //lsn
-                jsr binhex1          //generate ascii lsn
+                jsr binhex1           //generate ascii lsn
                 tax                   //save
                 pla                   //get msn & fall thru
 //
@@ -37,3 +36,4 @@ binhex1:        cmp #$0a
 binhex2:        eor #%00110000        //finalize nybble
                 rts                   //done
 
+#import "mem_map.asm"

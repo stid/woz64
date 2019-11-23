@@ -1,5 +1,4 @@
 #importonce
-#import "mem_map.asm"
 
 * = * "Memory Routines"
 
@@ -54,3 +53,5 @@ md3:            lda (MemMap.MEMORY.from),y // move the remaining bytes
                 cli
 md4:            rts
 }
+
+#import "mem_map.asm"

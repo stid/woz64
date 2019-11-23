@@ -1,57 +1,55 @@
 .filenamespace MemMap
 #importonce
 
-.const ZPAGE_BASE = $2
-
+*=$2 "ZERO PAGE" virtual
 
 .namespace SCREEN {
-    .label  TempVideoPointer                = ZPAGE_BASE      // 2 bytes
-    .label  TempStringPointer               = ZPAGE_BASE+2    // 2 bytes
-    .label  CursorCol                       = ZPAGE_BASE+4    // 1 byte
-    .label  CursorRow                       = ZPAGE_BASE+5    // 1 byte
-    .label  tempY                           = ZPAGE_BASE+6    // 1 byte
-    .label  tempX                           = ZPAGE_BASE+7    // 1 byte
-    .label  PrintPetCharY                   = ZPAGE_BASE+8    // 1 byte
-    .label  PrintPetCharX                   = ZPAGE_BASE+9    // 1 byte
-    .label  ScrollUpTriggered               = ZPAGE_BASE+10    // 1 byte
+    TempVideoPointer:   .word 0
+    TempStringPointer:  .word 0
+    CursorCol:          .byte 0
+    CursorRow:          .byte 0
+    tempY:              .byte 0
+    tempX:              .byte 0
+    PrintPetCharY:      .byte 0
+    PrintPetCharX:      .byte 0
+    ScrollUpTriggered:  .byte 0
 }
 
 .namespace MATH {
-    .label  factor1                         = ZPAGE_BASE+11    // 1 byte
-    .label  factor2                         = ZPAGE_BASE+12    // 1 byte
-    .label  result                          = ZPAGE_BASE+13   // 2 bytes
+    factor1:            .byte 0
+    factor2:            .byte 0
+    result:             .word 0
 }
 
 .namespace KEYB2 {
-    .label KeyR                             = ZPAGE_BASE+37 // 1 bytes
-    .label SYS_Keyd                         = ZPAGE_BASE+38 // 10 bytes
-    .label SYS_Ndx                          = ZPAGE_BASE+48 // 1 bytes
-    .label SYS_Xmax                         = ZPAGE_BASE+49 // 1 bytes
-    .label SYS_Shflag                       = ZPAGE_BASE+50 // 1 bytes
-    .label SYS_Sfdx                         = ZPAGE_BASE+51 // 1 bytes
-    .label SYS_Lstx                         = ZPAGE_BASE+52 // 1 bytes
-    .label SYS_Delay                        = ZPAGE_BASE+53 // 1 bytes
-    .label SYS_Kount                        = ZPAGE_BASE+54 // 1 bytes
-    .label SYS_Lstshf                       = ZPAGE_BASE+55 // 1 bytes
+    KeyR:                .byte 0
+    SYS_Keyd:            .fill $10,0
+    SYS_Ndx:             .byte 0
+    SYS_Xmax:            .byte 0
+    SYS_Shflag:          .byte 0
+    SYS_Sfdx:            .byte 0
+    SYS_Lstx:            .byte 0
+    SYS_Delay:           .byte 0
+    SYS_Kount:           .byte 0
+    SYS_Lstshf:          .byte 0
 }
 
 .namespace MEMORY {
-    .label from                             = ZPAGE_BASE+56 // 2 bytes
-    .label dest                             = ZPAGE_BASE+58 // 2 bytes
-    .label size                             = ZPAGE_BASE+60 // 2 bytes
+    from:                .word 0
+    dest:                .word 0
+    size:                .word 0
 }
 
 .namespace SHELL {
-    .label pos                               = ZPAGE_BASE+62 // 1 bytes
-    .label MODE                              = ZPAGE_BASE+63 // 1 bytes
-    .label L                                 = ZPAGE_BASE+64 // 1 bytes
-    .label H                                 = ZPAGE_BASE+65 // 1 bytes
-    .label YSAV                              = ZPAGE_BASE+66 // 1 bytes
-    .label STL                               = ZPAGE_BASE+67 // 1 bytes
-    .label STH                               = ZPAGE_BASE+68 // 1 bytes
-    .label XAML                              = ZPAGE_BASE+69 // 1 bytes
-    .label XAMH                              = ZPAGE_BASE+70 // 1 bytes
+    pos:                 .byte 0
+    MODE:                .byte 0
+    L:                   .byte 0
+    H:                   .byte 0
+    YSAV:                .byte 0
+    STL:                 .byte 0
+    STH:                 .byte 0
+    XAML:                .byte 0
+    XAMH:                .byte 0
 
-    .label buffer                            = $3000         // 256 bytes
-
+    .label buffer        = $3000  // 256 bytes
 }

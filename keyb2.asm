@@ -1,7 +1,6 @@
 // Advanced Version of Keyb Input routine
 #importonce
 .filenamespace Keyboard2
-#import "mem_map.asm"
 #import "memory.asm"
 
 .const CIA1_KeybWrite    = $DC00
@@ -10,6 +9,7 @@
 .const cSYS_DelayValue   = 32
 .const cKeybW_Row1       = $FE
 
+//------------------------------------------------------------------------------------
 init: {
                 lda #64
                 sta MemMap.KEYB2.SYS_Lstx
@@ -90,6 +90,7 @@ KeyMap4:
 
 cloneStart:
 
+//------------------------------------------------------------------------------------
 .pseudopc $1000 {
 ReadKeyb:
                 lda #<KeyMap1
@@ -225,7 +226,7 @@ ReadKeyb:
                 sta @SMC_Key + 2
                 jmp @Process
 
-// --------------------------
+//------------------------------------------------------------------------------------
 GetKey:         lda MemMap.KEYB2.SYS_Ndx
                 bne @IsKey
 
@@ -251,3 +252,6 @@ GetKey:         lda MemMap.KEYB2.SYS_Ndx
 * = * "Keyb: cloneEnd"
 
 cloneEnd:
+
+
+#import "mem_map.asm"

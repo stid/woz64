@@ -1,7 +1,6 @@
 #importonce
 .filenamespace Math
 
-#import "mem_map.asm"
 
 * = * "Math Routines"
 
@@ -34,3 +33,5 @@ multiply: {
                 cli
                 rts
 }
+
+#import "mem_map.asm"
