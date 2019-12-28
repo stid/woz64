@@ -1,4 +1,4 @@
-// BasicUpstart2(start)
+BasicUpstart2(start)
 #import "mem_map.asm"
 
 * = $8000 "Main"

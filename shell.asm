@@ -38,6 +38,7 @@ backspace: {
 }
 
 exec: {
+                    .break
                     lda     MemMap.SHELL.buffer     // Check first char
                     cmp     #'!'
                     beq     stidExec                // if ! is stid mon command
@@ -52,15 +53,16 @@ stidExec: {
 
                     lda     MemMap.SHELL.buffer, y
 
-                    cmp     #'h'
+                    cmp     #$48
                     beq     cmdHelp
 
-                    cmp     #'r'
+                    cmp     #$52
                     beq     cmdReset
 
 done:
                     rts
 
+// STID Commands
 cmdHelp:
                     print(helpString)
                     jmp     done
@@ -242,7 +244,8 @@ helpString:
         .text "r : hard reset"
         .byte $8e
         .text "z : zero page params"
+        .byte $8e
+        .text "----------------------"
         .byte $8e, 0
-
 
 #import "mem_map.asm"
