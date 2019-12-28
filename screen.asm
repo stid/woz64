@@ -2,6 +2,8 @@
 #import "math.asm"
 #import "memory.asm"
 
+
+
 // -----------------------
 // MACROS
 // -----------------------
@@ -9,83 +11,80 @@
 * = * "Screen Routines"
 
 .macro print(stringAddr) {
-        lda #<stringAddr // Low byte
-        ldx #>stringAddr // High byte
-        jsr Screen.print
+                lda #<stringAddr // Low byte
+                ldx #>stringAddr // High byte
+                jsr Screen.print
 }
 
 .macro cPrint() {
-        jsr Screen.printPetChar
+                jsr Screen.printPetChar
 }
 
-.macro ClearScreen(screen, clearByte) {
-        lda     #clearByte
-        ldx     #0
-!loop:
-        sta     screen, x
-        sta     screen + $100, x
-        sta     screen + $200, x
-        sta     screen + $300, x
-        inx
-        bne.r   !loop-
+.macro ClearChunks(baseAddress, clearByte) {
+                lda     #clearByte
+                ldx     #0
+        !loop:
+                sta     baseAddress, x
+                sta     baseAddress + $100, x
+                sta     baseAddress + $200, x
+                sta     baseAddress + $300, x
+                inx
+                bne.r   !loop-
+}
+
+
+.macro ClearScreen(clearByte) {
+                ClearChunks(Screen.VIDEO_ADDR, clearByte)
 }
 
 .macro ClearColorRam(clearByte) {
-        lda     #clearByte
-        ldx     #0
-!loop:
-        sta     $D800, x
-        sta     $D800 + $100, x
-        sta     $D800 + $200, x
-        sta     $D800 + $300, x
-        inx
-        bne.r   !loop-
+                ClearChunks(Screen.COLOR_ADDR, clearByte)
 }
 
 .macro SetBorderColor(color) {
-        lda     #color
-        sta     $d020
+                lda     #color
+                sta     $d020
 }
 
 .macro SetBackgroundColor(color) {
-        lda     #color
-        sta     $d021
+                lda     #color
+                sta     $d021
 }
 
 .macro SetMultiColor1(color) {
-        lda     #color
-        sta     $d022
+                lda     #color
+                sta     $d022
 }
 
 .macro SetMultiColor2(color) {
-        lda     #color
-        sta     $d023
+                lda     #color
+                sta     $d023
 }
 
 .macro SetMultiColorMode() {
-        lda	$d016
-        ora	#16
-        sta	$d016
+                lda	$d016
+                ora	#16
+                sta	$d016
 }
 
 .macro SetScrollMode() {
-        lda     $D016
-        eor     #%00001000
-        sta     $D016
+                lda     $D016
+                eor     #%00001000
+                sta     $D016
 }
 
 .filenamespace Screen
 
 
-// -----------------------
+//------------------------------------------------------------------------------------
 // CONSTANTS
-// -----------------------
-
-.const  VIDEO_ADDR      = $0400
-.const  COLUMN_NUM      = 40
-.const  ROWS_NUM        = 25
-.const  CR              = $8e
-.const  BS              = $95
+//------------------------------------------------------------------------------------
+.label  VIDEO_ADDR      = $0400
+.label  COLOR_ADDR      = $D800
+.label  COLUMN_NUM      = 40
+.label  ROWS_NUM        = 25
+.label  CR              = $8e
+.label  BS              = $95
 
 
 
@@ -104,12 +103,12 @@ scrollUp: {
                 clone(VIDEO_ADDR+40, VIDEO_ADDR+(COLUMN_NUM*(ROWS_NUM)), VIDEO_ADDR)
 
                 // clear last line
-                lda #32
-                ldx #40
+                lda     #32
+                ldx     #40
         !:
                 sta     VIDEO_ADDR+(COLUMN_NUM*(ROWS_NUM-1)), x
                 dex
-                bne !-
+                bpl     !-                                                  // x == -1
                 dec     MemMap.SCREEN.CursorRow
                 pla
                 rts
@@ -130,6 +129,7 @@ printPetChar: {
 
 //------------------------------------------------------------------------------------
 printChar: {
+                sei
                 stx     MemMap.SCREEN.tempX
                 cmp     #CR
                 bne.r   !+
@@ -194,11 +194,11 @@ noEndOfLine:
                 pla
 
                 // This is a backspace
-                cmp #BS
-                bne !+
-                lda #' '
+                cmp     #BS
+                        bne !+
+                        lda     #' '
                 sta     (MemMap.SCREEN.TempVideoPointer), y
-                jmp exit
+                jmp     exit
 
         !:
                 // insert into screen
@@ -209,6 +209,7 @@ noEndOfLine:
 
         exit:
                 ldx     MemMap.SCREEN.tempX
+                cli
                 rts
 }
 
@@ -223,17 +224,17 @@ noEndOfLine:
 //   returned values: none
 //   ——————————————————————————————————————————————————————
 print: {
-                ldy     #$00
-                sta     MemMap.SCREEN.TempStringPointer
-                stx     MemMap.SCREEN.TempStringPointer+1
-    printLoop:
-                lda     (MemMap.SCREEN.TempStringPointer), y
-                cmp     #0
-                beq     exit
-                jsr     Screen.printChar
-                jmp     printLoop
-    exit:
-                rts
+                        ldy     #$00
+                        sta     MemMap.SCREEN.TempStringPointer
+                        stx     MemMap.SCREEN.TempStringPointer+1
+        printLoop:
+                        lda     (MemMap.SCREEN.TempStringPointer), y
+                        cmp     #0
+                        beq     exit
+                        jsr     Screen.printChar
+                        jmp     printLoop
+        exit:
+                        rts
 }
 
 

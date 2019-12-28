@@ -3,22 +3,22 @@
 * = * "Memory Routines"
 
 .macro clone(from, to, dest) {
-        lda #<from
-        sta MemMap.MEMORY.from
-        lda #>from
-        sta MemMap.MEMORY.from+1
+                lda #<from
+                sta MemMap.MEMORY.from
+                lda #>from
+                sta MemMap.MEMORY.from+1
 
-        lda #<dest
-        sta MemMap.MEMORY.dest
-        lda #>dest
-        sta MemMap.MEMORY.dest+1
+                lda #<dest
+                sta MemMap.MEMORY.dest
+                lda #>dest
+                sta MemMap.MEMORY.dest+1
 
-        lda #<to-from
-        sta MemMap.MEMORY.size+1
-        lda #>to-from
-        sta MemMap.MEMORY.size
+                lda #<to-from
+                sta MemMap.MEMORY.size+1
+                lda #>to-from
+                sta MemMap.MEMORY.size
 
-        jsr Memory._clone
+                jsr Memory._clone
 }
 
 .filenamespace Memory

@@ -37,6 +37,41 @@ backspace: {
                     rts
 }
 
+exec: {
+                    lda     MemMap.SHELL.buffer     // Check first char
+                    cmp     #'!'
+                    beq     stidExec                // if ! is stid mon command
+                    jmp     wozExec                 // Otherwise exec Woz
+                    // Expect exec functions to RTS
+}
+
+
+stidExec: {
+                    .break
+                    ldy     #1
+
+                    lda     MemMap.SHELL.buffer, y
+
+                    cmp     #'h'
+                    beq     cmdHelp
+
+                    cmp     #'r'
+                    beq     cmdReset
+
+done:
+                    rts
+
+cmdHelp:
+                    print(helpString)
+                    jmp     done
+
+cmdReset:
+                    jmp     $fce2       // SYS 64738
+
+
+}
+
+
 
 // WOZ MONITOR FLOW - FROM APPLE1
 wozExec: {
@@ -193,5 +228,21 @@ PRHEX:              and     #%00001111                  // Mask LSD for hex prin
                     rts
 
 }
+
+//------------------------------------------------------------------------------------
+* = * "Shell Data"
+
+.encoding "screencode_mixed"
+
+helpString:
+        .text "----------------------"
+        .byte $8e
+        .text "h : this help"
+        .byte $8e
+        .text "r : hard reset"
+        .byte $8e
+        .text "z : zero page params"
+        .byte $8e, 0
+
 
 #import "mem_map.asm"
