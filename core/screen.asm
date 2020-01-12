@@ -1,26 +1,15 @@
 #importonce
-#import "math.asm"
-#import "memory.asm"
+#import "../libs/math.asm"
+#import "../libs/memory.asm"
+#import "../libs/module.asm"
 
+// ------------------------------------
+//     MACROS
+// ------------------------------------
 
+* = * "Screen Module"
 
-// -----------------------
-// MACROS
-// -----------------------
-
-* = * "Screen Routines"
-
-.macro print(stringAddr) {
-                lda #<stringAddr // Low byte
-                ldx #>stringAddr // High byte
-                jsr Screen.print
-}
-
-.macro cPrint() {
-                jsr Screen.printPetChar
-}
-
-.macro ClearChunks(baseAddress, clearByte) {
+.macro ScreenClearChunks(baseAddress, clearByte) {
                 lda     #clearByte
                 ldx     #0
         !loop:
@@ -33,41 +22,41 @@
 }
 
 
-.macro ClearScreen(clearByte) {
-                ClearChunks(Screen.VIDEO_ADDR, clearByte)
+.macro ScreenClear(clearByte) {
+                ScreenClearChunks(Screen.VIDEO_ADDR, clearByte)
 }
 
-.macro ClearColorRam(clearByte) {
-                ClearChunks(Screen.COLOR_ADDR, clearByte)
+.macro ScreenClearColorRam(clearByte) {
+                ScreenClearChunks(Screen.COLOR_ADDR, clearByte)
 }
 
-.macro SetBorderColor(color) {
+.macro ScreenSetBorderColor(color) {
                 lda     #color
                 sta     $d020
 }
 
-.macro SetBackgroundColor(color) {
+.macro ScreenSetBackgroundColor(color) {
                 lda     #color
                 sta     $d021
 }
 
-.macro SetMultiColor1(color) {
+.macro ScreenSetMultiColor1(color) {
                 lda     #color
                 sta     $d022
 }
 
-.macro SetMultiColor2(color) {
+.macro ScreenSetMultiColor2(color) {
                 lda     #color
                 sta     $d023
 }
 
-.macro SetMultiColorMode() {
+.macro ScreenSetMultiColorMode() {
                 lda	$d016
                 ora	#16
                 sta	$d016
 }
 
-.macro SetScrollMode() {
+.macro ScreenSetScrollMode() {
                 lda     $D016
                 eor     #%00001000
                 sta     $D016
@@ -76,9 +65,9 @@
 .filenamespace Screen
 
 
-//------------------------------------------------------------------------------------
-// CONSTANTS
-//------------------------------------------------------------------------------------
+// ------------------------------------
+//     COSTANTS
+// ------------------------------------
 .label  VIDEO_ADDR      = $0400
 .label  COLOR_ADDR      = $D800
 .label  COLUMN_NUM      = 40
@@ -87,7 +76,9 @@
 .label  BS              = $95
 
 
-
+// ------------------------------------
+//     METHODS
+// ------------------------------------
 
 //------------------------------------------------------------------------------------
 init: {
@@ -97,10 +88,15 @@ init: {
                 rts
 }
 
+toDebug: {
+                    ModuleDefaultToDebug(module_name, version)
+                    rts
+}
+
 //------------------------------------------------------------------------------------
 scrollUp: {
                 pha
-                clone(VIDEO_ADDR+40, VIDEO_ADDR+(COLUMN_NUM*(ROWS_NUM)), VIDEO_ADDR)
+                MemoryClone(VIDEO_ADDR+40, VIDEO_ADDR+(COLUMN_NUM*(ROWS_NUM)), VIDEO_ADDR)
 
                 // clear last line
                 lda     #32
@@ -114,21 +110,9 @@ scrollUp: {
                 rts
 }
 
-//------------------------------------------------------------------------------------
-printPetChar: {
-                pha
-                stx     MemMap.SCREEN.PrintPetCharX
-                sty     MemMap.SCREEN.PrintPetCharY
-                jsr     Screen.petToScreen
-                jsr     Screen.printChar
-                ldy     MemMap.SCREEN.PrintPetCharY
-                ldx     MemMap.SCREEN.PrintPetCharX
-                pla
-                rts
-}
 
 //------------------------------------------------------------------------------------
-printChar: {
+sendChar: {
                 sei
                 stx     MemMap.SCREEN.tempX
                 cmp     #CR
@@ -188,14 +172,13 @@ printChar: {
                 dec     MemMap.SCREEN.TempVideoPointer+1
         !:
 
-//------------------------------------------------------------------------------------
-noScrollTriggered:
-noEndOfLine:
+        noScrollTriggered:
+        noEndOfLine:
                 pla
 
                 // This is a backspace
                 cmp     #BS
-                        bne !+
+                        bne     !+
                         lda     #' '
                 sta     (MemMap.SCREEN.TempVideoPointer), y
                 jmp     exit
@@ -212,32 +195,6 @@ noEndOfLine:
                 cli
                 rts
 }
-
-
-//   ——————————————————————————————————————————————————————
-//   print
-//   ——————————————————————————————————————————————————————
-//   ——————————————————————————————————————————————————————
-//   preparatory ops: .a: low byte string address
-//                    .x: high byte string address
-//
-//   returned values: none
-//   ——————————————————————————————————————————————————————
-print: {
-                        ldy     #$00
-                        sta     MemMap.SCREEN.TempStringPointer
-                        stx     MemMap.SCREEN.TempStringPointer+1
-        printLoop:
-                        lda     (MemMap.SCREEN.TempStringPointer), y
-                        cmp     #0
-                        beq     exit
-                        jsr     Screen.printChar
-                        jmp     printLoop
-        exit:
-                        rts
-}
-
-
 
 //------------------------------------------------------------------------------------
 screenNewLine: {
@@ -261,67 +218,10 @@ screenNewLine: {
 }
 
 
-//   ————————————————————————————————————————
-//   petToScreen
-//   ————————————————————————————————————————
-//   ————————————————————————————————————————
-//   preparatory ops: .a: pet byte to convert
-//
-//   returned values: .a: conv SCREEN char
-//   ————————————————————————————————————————
-petToScreen: {
-        // $00-$1F
-                cmp     #$1f
-                bcs     !+
-                sec
-                adc     #128
-                jmp     convDone
-        // $20-$3F
-        !:
-                cmp     #$3f
-                bcs     !+
-                jmp     convDone
-        // $40-$5F
-        !:
-                cmp     #$5f
-                bcs     !+
-                sec
-                sbc     #$40
-                jmp     convDone
-        // $60-$7F
-        !:
-                cmp     #$7F
-                bcs     !+
-                sec
-                sbc     #32
-                jmp     convDone
-        // $80-$9F
-        !:
-                cmp     #$9F
-                bcs     !+
-                sec
-                adc     #64
-                jmp     convDone
-        // $A0-$BF
-        !:
-                cmp     #$BF
-                bcs     !+
-                sec
-                sbc     #64
-                jmp     convDone
-        // $C0-$DF
-        // $E0-$FE
-        !:
-                cmp     #$FE
-                bcs     !+
-                sec
-                sbc     #128
-                jmp     convDone
-        // $FF
-        !:
-                lda     $5E
-        convDone:
-                rts
-}
+* = * "Screen Module Data"
+version:    .byte 1, 0, 0
+module_name:
+        .text "core:screen"
+        .byte 0
 
-#import "mem_map.asm"
+#import "../core/mem_map.asm"

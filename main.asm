@@ -1,5 +1,5 @@
 BasicUpstart2(start)
-#import "mem_map.asm"
+#import "./core/mem_map.asm"
 
 * = $8000 "Main"
 
@@ -25,9 +25,11 @@ BasicUpstart2(start)
 .byte $C3,$C2,$CD,'8','0'   //..CBM80..
 
 //------------------------------------------------------------------------------------
-#import "screen.asm"
-#import "keyb2.asm"
-#import "shell.asm"
+#import "./core/init.asm"
+#import "./libs/print.asm"
+#import "./core/screen.asm"
+#import "./core/keyboard.asm"
+#import "./progs/woz_shell.asm"
 
 //------------------------------------------------------------------------------------
 // Main Program
@@ -51,19 +53,15 @@ coldstart:
 //------------------------------------------------------------------------------------
 start:
                 jsr initApp;
-                print(lineString)
-                print(testString)
-                print(lineString)
+                jsr WozShell.start
 
 loop:
                 lda #$FF
 Raster:         cmp RASTER_LINE         // Raster done?
                 bne Raster
-                jsr Keyboard2.ReadKeyb
-                jsr Keyboard2.GetKey
+                jsr Keyboard.ReadKeyb
+                jsr Keyboard.GetKey
                 bcs loop
-
-
 
                 cmp #CR
                 beq execute
@@ -71,20 +69,20 @@ Raster:         cmp RASTER_LINE         // Raster done?
                 cmp #BS
                 beq backspace
 inputChar:
-                jsr Shell.push                  // Char in Buffer
-                cPrint()
+                jsr WozShell.push                  // Char in Buffer
+                PrintChar()
                 jmp loop
 backspace:
-                jsr Shell.backspace
-                cPrint()
+                jsr WozShell.backspace
+                PrintChar()
                 jmp loop
 
 execute:
-                jsr Shell.push                  // CR in Buffer
+                jsr WozShell.push                  // CR in Buffer
                 jsr Screen.screenNewLine
-                jsr Shell.exec
+                jsr WozShell.exec
                 jsr Screen.screenNewLine
-                jsr Shell.clear
+                jsr WozShell.clear
                 jmp loop
 
 //------------------------------------------------------------------------------------
@@ -105,44 +103,21 @@ initApp: {
                 and TIMER_A_CTRL
                 sta TIMER_A_CTRL
 
-                ClearColorRam($00)
-                ClearScreen(' ')
-                SetBorderColor(BORDER_COLOR)
-                SetBackgroundColor(MAIN_COLOR)
-                jsr Screen.init
-                jsr Keyboard2.init
-                jsr Shell.init
+                ScreenClearColorRam($00)
+                ScreenClear(' ')
+                ScreenSetBorderColor(BORDER_COLOR)
+                ScreenSetBackgroundColor(MAIN_COLOR)
+                jsr Init.init
                 cli
                 rts
 }
 
 //------------------------------------------------------------------------------------
-* = * "Hoax"
-hoax: {
-        print(hoaxString)
-        jmp loop
-}
-
-//------------------------------------------------------------------------------------
 * = * "Kernel Data"
 
-.encoding "screencode_mixed"
 
-version:        .byte   00
-revision:       .byte   01
-minor:          .byte   05
-
-testString:
-        .text "woz64 mon - v 0.1.5"
-        .byte $8e, 0
-lineString:
-        .text "----------------------------------------"
-        .byte $8e, 0
-hoaxString:
-        .text "=stid= 1972"
-        .byte $8e, 0
 
 * = $9FFF "EpromFiller"
-    .byte 0
+                .byte 0
 
 

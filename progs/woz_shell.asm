@@ -1,9 +1,11 @@
 #importonce
-.filenamespace Shell
+.filenamespace WozShell
 
-#import "screen.asm"
+#import "../libs/print.asm"
+#import "../libs/module.asm"
+#import "../core/init.asm"
 
-* = * "Shell Routines"
+* = * "WozShell Routines"
 
 .const  CR =  $0d
 .const  R  =  $52
@@ -11,9 +13,22 @@
 
 clear:
 init: {
+
                     lda #-1
                     sta MemMap.SHELL.pos
                     rts
+}
+
+start: {
+                        PrintLine(lineString)
+                        PrintLine(aboutString)
+                        PrintLine(lineString)
+                        rts
+}
+
+toDebug: {
+                        ModuleDefaultToDebug(module_name, version)
+                rts
 }
 
 push: {
@@ -38,7 +53,6 @@ backspace: {
 }
 
 exec: {
-                    .break
                     lda     MemMap.SHELL.buffer     // Check first char
                     cmp     #'!'
                     beq     stidExec                // if ! is stid mon command
@@ -48,31 +62,35 @@ exec: {
 
 
 stidExec: {
-                    .break
                     ldy     #1
 
                     lda     MemMap.SHELL.buffer, y
 
-                    cmp     #$48
+                    cmp     #$48 // H
                     beq     cmdHelp
 
-                    cmp     #$52
+                    cmp     #$52 // R
                     beq     cmdReset
+
+                    cmp     #$56 // Z
+                    beq     cmdZeroPageInfo
 
 done:
                     rts
 
 // STID Commands
 cmdHelp:
-                    print(helpString)
+                .break
+                    PrintLine(helpString)
                     jmp     done
 
 cmdReset:
                     jmp     $fce2       // SYS 64738
 
-
+cmdZeroPageInfo:
+                    jsr     Init.toDebug
+                    jmp     done
 }
-
 
 
 // WOZ MONITOR FLOW - FROM APPLE1
@@ -175,16 +193,16 @@ SETADR:             lda     MemMap.SHELL.L-1,X          // Copy hex data to
 
 NXTPRNT:            bne     PRDATA                      // NE means no address to print
                     lda     #CR                         // Print CR first
-                    cPrint()
+                    PrintChar()
                     lda     MemMap.SHELL.XAMH          // Output high-order byte of address
                     jsr     PRBYTE
                     lda     MemMap.SHELL.XAML          // Output low-order byte of address
                     jsr     PRBYTE
                     lda     #':'                        // Print colon
-                    cPrint()
+                    PrintChar()
 
 PRDATA:             lda     #' '                        // Print space
-                    cPrint()
+                    PrintChar()
                     lda     (MemMap.SHELL.XAML,X)       // Get data from address (X=0)
                     jsr     PRBYTE                      // Output it in hex format
 XAMNEXT:            stx     MemMap.SHELL.MODE           // 0 -> MODE (XAM mode).
@@ -226,26 +244,37 @@ PRHEX:              and     #%00001111                  // Mask LSD for hex prin
                     bcc     !+                          // Yes! output it
                     adc     #6                          // Add offset for letter A-F
     !:
-                    cPrint()
+                    PrintChar()
                     rts
 
 }
 
 //------------------------------------------------------------------------------------
-* = * "Shell Data"
+* = * "WozShell Data"
+version:    .byte 1, 2, 0
 
 .encoding "screencode_mixed"
+module_name:
+                .text "prg:woz-shell"
+                .byte 0
 
 helpString:
-        .text "----------------------"
-        .byte $8e
-        .text "h : this help"
-        .byte $8e
-        .text "r : hard reset"
-        .byte $8e
-        .text "z : zero page params"
-        .byte $8e
-        .text "----------------------"
-        .byte $8e, 0
+                .text "----------------------"
+                .byte $8e
+                .text "h : this help"
+                .byte $8e
+                .text "r : hard reset"
+                .byte $8e
+                .text "z : zero page params"
+                .byte $8e
+                .text "----------------------"
+                .byte $8e, 0
 
-#import "mem_map.asm"
+aboutString:
+                .text "woz64 mon - v 0.1.5"
+                .byte $8e, 0
+lineString:
+                .text "----------------------------------------"
+                .byte $8e, 0
+
+#import "../core/mem_map.asm"

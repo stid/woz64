@@ -21,7 +21,7 @@
     result:             .word 0
 }
 
-.namespace KEYB2 {
+.namespace KEYBOARD {
     KeyR:                .byte 0
     SYS_Keyd:            .fill $10,0
     SYS_Ndx:             .byte 0
@@ -40,6 +40,11 @@
     size:                .word 0
 }
 
+.namespace MODULE {
+    versionPtr:                .word 0
+}
+
+
 .namespace SHELL {
     pos:                 .byte 0
     MODE:                .byte 0
@@ -53,3 +58,4 @@
 
     .label buffer        = $3000  // 256 bytes
 }
+

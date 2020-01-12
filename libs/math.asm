@@ -1,9 +1,28 @@
+
 #importonce
+#import "../libs/module.asm"
+
+// ------------------------------------
+//     MACROS
+// ------------------------------------
+
+
 .filenamespace Math
 
+* = * "Math Lin"
 
-* = * "Math Routines"
+// ------------------------------------
+//     METHODS
+// ------------------------------------
 
+init: {
+                rts
+}
+
+toDebug: {
+                    ModuleDefaultToDebug(module_name, version)
+                    rts
+}
 
 //------------------------------------------------------------------------------------
 multiply: {
@@ -34,4 +53,18 @@ multiply: {
                 rts
 }
 
-#import "mem_map.asm"
+
+// ------------------------------------
+//     DATA
+// ------------------------------------
+
+* = * "Math Lib Data"
+version:    .byte 1, 1, 0
+.encoding "screencode_mixed"
+module_name:
+        .text "lib:math"
+        .byte 0
+
+
+#import "../core/mem_map.asm"
+
