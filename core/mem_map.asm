@@ -38,6 +38,8 @@
     from:                .word 0
     dest:                .word 0
     size:                .word 0
+    tmpX:                .byte 0
+    tmpY:                .byte 0
 }
 
 .namespace MODULE {

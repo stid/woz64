@@ -79,6 +79,8 @@ toDebug: {
 // MemMap.MEMORY.dest - Should contain the destination pointer
 // MemMap.MEMORY.size - Should contain the size to copy
 clone: {
+                    stx MemMap.MEMORY.tmpX
+                    sty MemMap.MEMORY.tmpY
                     sei
                     ldy #0
                     ldx MemMap.MEMORY.size
@@ -99,7 +101,10 @@ clone: {
                     dex
                     bne md3
                     cli
-    md4:            rts
+    md4:
+                    ldx MemMap.MEMORY.tmpX
+                    ldy MemMap.MEMORY.tmpY
+                    rts
 }
 
 // Fill Memopry Range with byte loaded in A
@@ -108,6 +113,8 @@ clone: {
 // MemMap.MEMORY.size - Should contain the size to copy
 // A - The byte to fill memory with
 fill: {
+                    stx MemMap.MEMORY.tmpX
+                    sty MemMap.MEMORY.tmpY
                     sei
                     ldy #0
                     ldx MemMap.MEMORY.size
@@ -127,7 +134,10 @@ fill: {
                     dex
                     bne md3
                     cli
-    md4:            rts
+    md4:
+                    ldx MemMap.MEMORY.tmpX
+                    ldy MemMap.MEMORY.tmpY
+                    rts
 }
 
 // Clear Memory with 0

@@ -1,5 +1,6 @@
 #importonce
 #import "../libs/module.asm"
+#import "../libs/memory.asm"
 
 // ------------------------------------
 //     MACROS
@@ -7,7 +8,6 @@
 
 
 .filenamespace Keyboard
-#import "../libs/memory.asm"
 
 
 * = * "Keyboard Module"

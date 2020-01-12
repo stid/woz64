@@ -1,7 +1,10 @@
-BasicUpstart2(start)
+.cpu _6502
+
+// BasicUpstart2(start)
 #import "./core/mem_map.asm"
 
 * = $8000 "Main"
+
 
 //------------------------------------------------------------------------------------
 .const  MAIN_COLOR      = $03

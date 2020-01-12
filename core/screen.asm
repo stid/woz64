@@ -97,7 +97,6 @@ toDebug: {
 scrollUp: {
                 pha
                 MemoryClone(VIDEO_ADDR+40, VIDEO_ADDR+(COLUMN_NUM*(ROWS_NUM)), VIDEO_ADDR)
-
                 // clear last line
                 lda     #32
                 ldx     #40

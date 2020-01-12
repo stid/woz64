@@ -35,7 +35,6 @@ toDebug: {
 
 //------------------------------------------------------------------------------------
 printVersion: {
-                .break
                 sta MemMap.MODULE.versionPtr
                 stx MemMap.MODULE.versionPtr+1
                 ldy #0

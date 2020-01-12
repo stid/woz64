@@ -80,7 +80,6 @@ done:
 
 // STID Commands
 cmdHelp:
-                .break
                     PrintLine(helpString)
                     jmp     done
 
@@ -265,7 +264,7 @@ helpString:
                 .byte $8e
                 .text "r : hard reset"
                 .byte $8e
-                .text "z : zero page params"
+                .text "v : modue versions"
                 .byte $8e
                 .text "----------------------"
                 .byte $8e, 0
