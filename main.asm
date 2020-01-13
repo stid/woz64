@@ -1,6 +1,6 @@
 .cpu _6502
 
-// BasicUpstart2(start)
+//BasicUpstart2(start)
 #import "./core/mem_map.asm"
 
 * = $8000 "Main"

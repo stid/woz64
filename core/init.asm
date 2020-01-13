@@ -5,16 +5,22 @@
 #import "../libs/print.asm"
 #import "../core/keyboard.asm"
 #import "../core/screen.asm"
+#import "../libs/module.asm"
 #import "../progs/woz_shell.asm"
 
 .filenamespace Init
 
 * = * "Init Core"
 
-// ------------------------------------
-//     METHODS
-// ------------------------------------
 
+// ========================================================
+// ////// METHODS /////////////////////////////////////////
+// ========================================================
+
+// --------------------------------------------------------
+// init -
+// Module Init.
+// --------------------------------------------------------
 init: {
             // Init All Modules
             jsr Memory.init
@@ -27,9 +33,13 @@ init: {
             rts
 }
 
+// --------------------------------------------------------
+// toDebug -
+// Print debug info.
+// --------------------------------------------------------
 toDebug: {
             // Debug All Modules
-            ModuleDefaultToDebug(module_name, version)
+            ModuleToDebug(module_type, module_name, version)
             jsr Keyboard.toDebug
             jsr Screen.toDebug
             jsr Module.toDebug
@@ -42,14 +52,19 @@ toDebug: {
 
 
 
-// ------------------------------------
-//     DATA
-// ------------------------------------
+// ========================================================
+// ////// DATA ////////////////////////////////////////////
+// ========================================================
 
 * = * "Init Core Data"
-version:    .byte 1, 0, 0
+module_type:            .byte Module.TYPES.CORE
+version:                .byte 1, 1, 0
+
+.encoding "screencode_mixed"
 module_name:
-        .text "core:init"
+        .text "init"
         .byte 0
+
+
 #import "../core/mem_map.asm"
 

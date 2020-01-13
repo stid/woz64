@@ -3,12 +3,22 @@
 #import "../libs/memory.asm"
 #import "../libs/module.asm"
 
-// ------------------------------------
-//     MACROS
-// ------------------------------------
+
+// ========================================================
+// ////// MACROS //////////////////////////////////////////
+// ========================================================
+
 
 * = * "Screen Module"
 
+// --------------------------------------------------------
+// ScreenClearChunks -
+// Fast clear screen mem chunks.
+//
+// Parameters:
+//      baseAddress      = Pointer to screen orcolor map Address
+//      clearByte        = Byte to use to clear screen
+// --------------------------------------------------------
 .macro ScreenClearChunks(baseAddress, clearByte) {
                 lda     #clearByte
                 ldx     #0
@@ -22,52 +32,95 @@
 }
 
 
+// --------------------------------------------------------
+// ScreenClear -
+// Fast clear screen characters mem.
+//
+// Parameters:
+//      clearByte        = Byte to use to clear screen
+// --------------------------------------------------------
 .macro ScreenClear(clearByte) {
                 ScreenClearChunks(Screen.VIDEO_ADDR, clearByte)
 }
 
+// --------------------------------------------------------
+// ScreenClear -
+// Fast clear screen Color Ram.
+//
+// Parameters:
+//      clearByte        = Byte to use to clear screen
+// --------------------------------------------------------
 .macro ScreenClearColorRam(clearByte) {
                 ScreenClearChunks(Screen.COLOR_ADDR, clearByte)
 }
 
+// --------------------------------------------------------
+// ScreenSetBorderColor -
+// Set Screen border color.
+//
+// Parameters:
+//      color        = https://www.c64-wiki.com/wiki/Color
+// --------------------------------------------------------
 .macro ScreenSetBorderColor(color) {
                 lda     #color
                 sta     $d020
 }
 
+// --------------------------------------------------------
+// ScreenSetBackgroundColor -
+// Set Screen Backfground color.
+//
+// Parameters:
+//      color        = https://www.c64-wiki.com/wiki/Color
+// --------------------------------------------------------
 .macro ScreenSetBackgroundColor(color) {
                 lda     #color
                 sta     $d021
 }
 
+// --------------------------------------------------------
+// ScreenSetMultiColor1 -
+// Set Screen Muticolor 1.
+//
+// Parameters:
+//      color        = https://www.c64-wiki.com/wiki/Color
+// --------------------------------------------------------
 .macro ScreenSetMultiColor1(color) {
                 lda     #color
                 sta     $d022
 }
 
+// --------------------------------------------------------
+// ScreenSetMultiColor2 -
+// Set Screen Muticolor 2.
+//
+// Parameters:
+//      color        = https://www.c64-wiki.com/wiki/Color
+// --------------------------------------------------------
 .macro ScreenSetMultiColor2(color) {
                 lda     #color
                 sta     $d023
 }
 
+// --------------------------------------------------------
+// ScreenSetMultiColorMode -
+// Set Screen Muticolor 2.
+//
+// Parameters:
+//      color   = https://www.c64-wiki.com/wiki/Multicolor_Bitmap_Mode
+// --------------------------------------------------------
 .macro ScreenSetMultiColorMode() {
                 lda	$d016
                 ora	#16
                 sta	$d016
 }
 
-.macro ScreenSetScrollMode() {
-                lda     $D016
-                eor     #%00001000
-                sta     $D016
-}
-
 .filenamespace Screen
 
+// ========================================================
+// ////// CONSTANTS ///////////////////////////////////////
+// ========================================================
 
-// ------------------------------------
-//     COSTANTS
-// ------------------------------------
 .label  VIDEO_ADDR      = $0400
 .label  COLOR_ADDR      = $D800
 .label  COLUMN_NUM      = 40
@@ -76,11 +129,15 @@
 .label  BS              = $95
 
 
-// ------------------------------------
-//     METHODS
-// ------------------------------------
+// ========================================================
+// ////// METHODS /////////////////////////////////////////
+// ========================================================
 
-//------------------------------------------------------------------------------------
+
+// --------------------------------------------------------
+// init -
+// Module Init.
+// --------------------------------------------------------
 init: {
                 lda     #$00
                 sta     MemMap.SCREEN.CursorCol
@@ -88,12 +145,19 @@ init: {
                 rts
 }
 
+// --------------------------------------------------------
+// toDebug -
+// Print debug info.
+// --------------------------------------------------------
 toDebug: {
-                    ModuleDefaultToDebug(module_name, version)
+                    ModuleToDebug(module_type, module_name, version)
                     rts
 }
 
-//------------------------------------------------------------------------------------
+// --------------------------------------------------------
+// scrollUp -
+// Scroll the entire screen UP - 1 line
+// --------------------------------------------------------
 scrollUp: {
                 pha
                 MemoryClone(VIDEO_ADDR+40, VIDEO_ADDR+(COLUMN_NUM*(ROWS_NUM)), VIDEO_ADDR)
@@ -110,7 +174,14 @@ scrollUp: {
 }
 
 
-//------------------------------------------------------------------------------------
+// --------------------------------------------------------
+// sendChar -
+// Send a single char to the screen. Auto handle line feed,
+// end of screen scrolling and Backspace.
+//
+// Parameters:
+//      A       = Character to Print SCREEN ASCII
+// --------------------------------------------------------
 sendChar: {
                 sei
                 stx     MemMap.SCREEN.tempX
@@ -195,7 +266,11 @@ sendChar: {
                 rts
 }
 
-//------------------------------------------------------------------------------------
+// --------------------------------------------------------
+// screenNewLine -
+// Insert a New Line to screen - auto handle screen bottom
+// linit scroll.
+// --------------------------------------------------------
 screenNewLine: {
                         pha
                         lda     #0
@@ -216,11 +291,11 @@ screenNewLine: {
                         rts
 }
 
-
 * = * "Screen Module Data"
-version:    .byte 1, 0, 0
+module_type:            .byte Module.TYPES.CORE
+version:                .byte 1, 0, 0
 module_name:
-        .text "core:screen"
+        .text "screen"
         .byte 0
 
 #import "../core/mem_map.asm"

@@ -4,11 +4,11 @@
 #import "../core/screen.asm"
 #import "../libs/module.asm"
 
-* = * "Print Lib"
 
-// ------------------------------------
-//     MACROS
-// ------------------------------------
+// ========================================================
+// ////// MACROS //////////////////////////////////////////
+// ========================================================
+
 .macro PrintLine(stringAddr) {
                 lda #<stringAddr // Low byte
                 ldx #>stringAddr // High byte
@@ -25,22 +25,38 @@
 
 
 .filenamespace Print
-// ------------------------------------
-//     METHODS
-// ------------------------------------
 
-//------------------------------------------------------------------------------------
+* = * "Print Lib"
+
+// ========================================================
+// ////// METHODS /////////////////////////////////////////
+// ========================================================
+
+
+// --------------------------------------------------------
+// init -
+// Module Init.
+// --------------------------------------------------------
 init: {
                 rts
 }
 
-//------------------------------------------------------------------------------------
+// --------------------------------------------------------
+// toDebug -
+// Print debug info.
+// --------------------------------------------------------
 toDebug: {
-                ModuleDefaultToDebug(module_name, version)
+                ModuleToDebug(module_type, module_name, version)
                 rts
 }
 
-//------------------------------------------------------------------------------------
+// --------------------------------------------------------
+// printPetChar -
+// Convert a Char from PET ASCII and print it out on Screen
+//
+// Parameters:
+//      A       = PET ASCII char to print
+// --------------------------------------------------------
 printPetChar: {
                 pha
                 stx     MemMap.SCREEN.PrintPetCharX
@@ -53,15 +69,14 @@ printPetChar: {
                 rts
 }
 
-//   ——————————————————————————————————————————————————————
-//   printLine
-//   ——————————————————————————————————————————————————————
-//   ——————————————————————————————————————————————————————
-//   preparatory ops: .a: low byte string address
-//                    .x: high byte string address
+// --------------------------------------------------------
+// printLine -
+// Print a Null terminated SCREEN ASCII string to screen.
 //
-//   returned values: none
-//   ——————————————————————————————————————————————————————
+// Parameters:
+//      A       = low byte string address
+//      X       = low byte string address
+// --------------------------------------------------------
 printLine: {
                         ldy     #$00
                         sta     MemMap.SCREEN.TempStringPointer
@@ -76,16 +91,17 @@ printLine: {
                         rts
 }
 
-//   ————————————————————————————————————
-//   btohex
-//   ————————————————————————————————————
-//   ————————————————————————————————————
-//   preparatory ops: .a: byte to convert
+// --------------------------------------------------------
+// byteToHex -
+// Convert a byte to an HEX value
 //
-//   returned values: .a: msn ascii char
-//                    .x: lsn ascii char
-//                    .y: entry value
-//   ————————————————————————————————————
+// Parameters:
+//      Y       = Byte to Convert
+//
+// Result:
+//      A       = msn ascii char result
+//      X       = lns ascii char result
+// --------------------------------------------------------
 byteToHex:      {
                     pha                   //save byte
                     and #%00001111        //extract lsn
@@ -110,15 +126,16 @@ byteToHex:      {
                     rts                   //done
 }
 
-
-//   ————————————————————————————————————————
-//   petToScreen
-//   ————————————————————————————————————————
-//   ————————————————————————————————————————
-//   preparatory ops: .a: pet byte to convert
+// --------------------------------------------------------
+// petCharToScreenChar -
+// Convert a PET ASCII Char to a SCREEN ASCII Char
 //
-//   returned values: .a: conv SCREEN char
-//   ————————————————————————————————————————
+// Parameters:
+//      A       = PET ASCII Byte to Convert
+//
+// Result:
+//      A       = Converted ASCII SCREEN Char
+// --------------------------------------------------------
 petCharToScreenChar: {
         // $00-$1F
                 cmp     #$1f
@@ -175,16 +192,18 @@ petCharToScreenChar: {
 }
 
 
-// ------------------------------------
-//      DATA
-// ------------------------------------
+// ========================================================
+// ////// DATA ////////////////////////////////////////////
+// ========================================================
 
 * = * "Print Lib Data"
-version:    .byte 1, 0, 0
-.encoding "screencode_mixed"
+module_type:    .byte Module.TYPES.LIB
+version:        .byte 1, 0, 0
+
+.encoding       "screencode_mixed"
 module_name:
-        .text "lib:print"
-        .byte 0
+                .text "print"
+                .byte 0
 
 #import "../core/mem_map.asm"
 

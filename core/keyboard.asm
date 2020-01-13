@@ -1,30 +1,33 @@
 #importonce
 #import "../libs/module.asm"
 #import "../libs/memory.asm"
-
-// ------------------------------------
-//     MACROS
-// ------------------------------------
+#import "../libs/module.asm"
 
 
 .filenamespace Keyboard
 
 
-* = * "Keyboard Module"
-// ------------------------------------
-//     CONSTANTS
-// ------------------------------------
+// ========================================================
+// ////// CONSTANTS ///////////////////////////////////////
+// ========================================================
+
+
 .const CIA1_KeybWrite    = $DC00
 .const CIA1_KeybRead     = $DC01
 
 .const cSYS_DelayValue   = 32
 .const cKeybW_Row1       = $FE
 
+* = * "Keyboard Module"
 
-// ------------------------------------
-//     METHODS
-// ------------------------------------
+// ========================================================
+// ////// METHODS ROM /////////////////////////////////////
+// ========================================================
 
+// --------------------------------------------------------
+// init -
+// Module Init.
+// --------------------------------------------------------
 init: {
                 lda #64
                 sta MemMap.KEYBOARD.SYS_Lstx
@@ -45,15 +48,23 @@ init: {
                 lda #10
                 sta MemMap.KEYBOARD.SYS_Xmax
 
-                // CLODE TO RAM
+                // Clone self altering Methods to RAM
                 MemoryClone(cloneStart, cloneEnd, $1000)
                 rts
 }
 
+// --------------------------------------------------------
+// toDebug -
+// Print debug info.
+// --------------------------------------------------------
 toDebug: {
-                    ModuleDefaultToDebug(module_name, version)
+                    ModuleToDebug(module_type, module_name, version)
                     rts
 }
+
+// ========================================================
+// ////// KEYMAPPING RON //////////////////////////////////
+// ========================================================
 
 KeyMapVec:
     .word KeyMap1, KeyMap2, KeyMap3, KeyMap4
@@ -107,15 +118,32 @@ KeyMap4:
         .byte $FF
 
 
-// ------------------------------------
-//     RAM METHODS
-// ------------------------------------
+// ========================================================
+// ////// METHODS RAM /////////////////////////////////////
+// ========================================================
 
 * = * "Keyboard Ram"
 
 cloneStart:
+// Code between cloneStart & cloneEnd is cloned in RAM
+// at Init time. The logic alter the code itself for
+// performance and so can't be executed directly in ROM.
+// See .pseudopc $1000 directive below.
 
-//------------------------------------------------------------------------------------
+
+// --------------------------------------------------------
+// ReadKeyb -
+// Read Keyboard input - if any- should be called in a loop
+// getKey should be used after to chek if and what key was
+// pressed.
+//
+// Example:
+//        loop:
+//                jsr Keyboard.ReadKeyb
+//                jsr Keyboard.GetKey
+//                bcs loop
+//               // Key here is in A
+// --------------------------------------------------------
 .pseudopc $1000 {
 ReadKeyb:
                 lda #<KeyMap1
@@ -251,7 +279,14 @@ ReadKeyb:
                 sta @SMC_Key + 2
                 jmp @Process
 
-//------------------------------------------------------------------------------------
+// --------------------------------------------------------
+// GetKey -
+// Get latest pressed key - if any. Should be used in
+// conjuction with ReadKeyb.
+//
+// Result:
+//      A       = Pressed key code or 0
+// --------------------------------------------------------
 GetKey:         lda MemMap.KEYBOARD.SYS_Ndx
                 bne @IsKey
 
@@ -276,14 +311,19 @@ GetKey:         lda MemMap.KEYBOARD.SYS_Ndx
 
 cloneEnd:
 
-// ------------------------------------
-//     DATA
-// ------------------------------------
+// ========================================================
+// ////// DATA ////////////////////////////////////////////
+// ========================================================
 
 * = * "Keyboard Module Data"
-version:    .byte 1, 1, 0
+module_type:            .byte Module.TYPES.CORE
+version:                .byte 1, 1, 0
+
+.encoding "screencode_mixed"
 module_name:
-        .text "core:keyboard"
+        .text "keyboard"
         .byte 0
+
+
 #import "../core/mem_map.asm"
 

@@ -1,14 +1,22 @@
 
 #importonce
 #import "../libs/module.asm"
+#import "../libs/module.asm"
 
 
-* = * "Memory Lib"
+// ========================================================
+// ////// MACROS //////////////////////////////////////////
+// ========================================================
 
-// ------------------------------------
-//     MACROS
-// ------------------------------------
-
+// --------------------------------------------------------
+// MemoryClone -
+// Clone a range of memory to the passe destination.
+//
+// Parameters:
+//      from      = Start Memory Pointer to clone
+//      to        = End Memory Pointer to clone
+//      dest      = Destination Memory pointer
+// --------------------------------------------------------
 .macro MemoryClone(from, to, dest) {
                 lda #<from
                 sta MemMap.MEMORY.from
@@ -28,6 +36,15 @@
                 jsr Memory.clone
 }
 
+// --------------------------------------------------------
+// MemoryFill -
+// Fill specified memory range with related byte.
+//
+// Parameters:
+//      from            = Start Memory Pointer to fill
+//      to              = End Memory Pointer to fill
+//      fillByte        = Byte used to fill the range
+// --------------------------------------------------------
 .macro MemoryFill(from, to, fillByte) {
                 lda #<from
                 sta MemMap.MEMORY.from
@@ -43,6 +60,14 @@
                 jsr Memory.fill
 }
 
+// --------------------------------------------------------
+// MemoryClear -
+// Fill specified memory range with Zero
+//
+// Parameters:
+//      from            = Start Memory Pointer to fill
+//      to              = End Memory Pointer to fill
+// --------------------------------------------------------
 .macro MemoryClear(from, to) {
                 lda #<from
                 sta MemMap.MEMORY.from
@@ -57,27 +82,46 @@
                 jsr Memory.clear
 }
 
-// ------------------------------------
-//     METHODS
-// ------------------------------------
 
 .filenamespace Memory
 
+* = * "Memory Lib"
+
+// ========================================================
+// ////// METHODS /////////////////////////////////////////
+// ========================================================
+
+
+// --------------------------------------------------------
+// init -
+// Module Init.
+// --------------------------------------------------------
 init: {
                     rts
 }
 
+// --------------------------------------------------------
+// toDebug -
+// Print debug info.
+// --------------------------------------------------------
 toDebug: {
-                    ModuleDefaultToDebug(module_name, version)
+                    ModuleToDebug(module_type, module_name, version)
                     rts
 
 }
 
+// --------------------------------------------------------
+// clone -
 // Clone Memopry Range
 //
-// MemMap.MEMORY.from - Should contain the target pointer
-// MemMap.MEMORY.dest - Should contain the destination pointer
-// MemMap.MEMORY.size - Should contain the size to copy
+// Parameters:
+//      MemMap.MEMORY.from = Should contain the target
+//                           pointer
+//      MemMap.MEMORY.dest = Should contain the destination
+//                           pointer
+//      MemMap.MEMORY.size = Should contain the size to
+//                           copy
+// --------------------------------------------------------
 clone: {
                     stx MemMap.MEMORY.tmpX
                     sty MemMap.MEMORY.tmpY
@@ -107,11 +151,17 @@ clone: {
                     rts
 }
 
+// --------------------------------------------------------
+// fill -
 // Fill Memopry Range with byte loaded in A
 //
-// MemMap.MEMORY.dest - Should contain the destination pointer
-// MemMap.MEMORY.size - Should contain the size to copy
-// A - The byte to fill memory with
+// Parameters:
+//      MemMap.MEMORY.dest = Should contain the destination
+//                           pointer
+//      MemMap.MEMORY.size = Should contain the size to
+//                           fill
+//      A                  = The byte to fill memory with
+// --------------------------------------------------------
 fill: {
                     stx MemMap.MEMORY.tmpX
                     sty MemMap.MEMORY.tmpY
@@ -144,22 +194,36 @@ fill: {
 //
 // MemMap.MEMORY.dest - Should contain the destination pointer
 // MemMap.MEMORY.size - Should contain the size to copy
-clear: {
+
+// --------------------------------------------------------
+// clean -
+// Clear Memory with 0
+//
+// Parameters:
+//      MemMap.MEMORY.dest = Should contain the destination
+//                           pointer
+//      MemMap.MEMORY.size = Should contain the size to
+//                           clean
+// --------------------------------------------------------
+clean: {
                     lda #00
                     jmp Memory.fill
 }
 
 
-// ------------------------------------
-//     DATA
-// ------------------------------------
+// ========================================================
+// ////// DATA ////////////////////////////////////////////
+// ========================================================
 
 * = * "Memory Lib Data"
-version:    .byte 1, 1, 0
+module_type:            .byte Module.TYPES.LIB
+version:                .byte 1, 1, 0
+
 .encoding "screencode_mixed"
 module_name:
-        .text "lib:memory"
+        .text "memory"
         .byte 0
+
 
 #import "../core/mem_map.asm"
 #import "../core/screen.asm"

@@ -1,14 +1,23 @@
 #importonce
-.filenamespace WozShell
-
 #import "../libs/print.asm"
 #import "../libs/module.asm"
 #import "../core/init.asm"
 
+.filenamespace WozShell
+
 * = * "WozShell Routines"
+
+// ========================================================
+// ////// CONSTANTS ///////////////////////////////////////
+// ========================================================
 
 .const  CR =  $0d
 .const  R  =  $52
+
+
+// ========================================================
+// ////// METHODS /////////////////////////////////////////
+// ========================================================
 
 
 clear:
@@ -27,8 +36,8 @@ start: {
 }
 
 toDebug: {
-                        ModuleDefaultToDebug(module_name, version)
-                rts
+                        ModuleToDebug(module_type, module_name, version)
+                    rts
 }
 
 push: {
@@ -248,13 +257,18 @@ PRHEX:              and     #%00001111                  // Mask LSD for hex prin
 
 }
 
-//------------------------------------------------------------------------------------
+
+// ========================================================
+// ////// DATA ////////////////////////////////////////////
+// ========================================================
+
 * = * "WozShell Data"
-version:    .byte 1, 2, 0
+module_type:    .byte Module.TYPES.PROG
+version:        .byte 1, 2, 0
 
 .encoding "screencode_mixed"
 module_name:
-                .text "prg:woz-shell"
+                .text "woz-shell"
                 .byte 0
 
 helpString:
