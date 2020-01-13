@@ -5,6 +5,7 @@
 #import "../libs/print.asm"
 #import "../core/keyboard.asm"
 #import "../core/screen.asm"
+#import "../core/pseudo.asm"
 #import "../libs/module.asm"
 #import "../progs/woz_shell.asm"
 
@@ -23,13 +24,14 @@
 // --------------------------------------------------------
 init: {
                 // Init All Modules
+                jsr     Pseudo.init
+                jsr     Module.init
                 jsr     Memory.init
                 jsr     Math.init
                 jsr     Print.init
                 jsr     Keyboard.init
                 jsr     Screen.init
                 jsr     WozShell.init
-                jsr     Module.init
                 rts
 }
 
@@ -42,6 +44,7 @@ toDebug: {
                 ModuleToDebug(module_type, module_name, version)
                 jsr     Keyboard.toDebug
                 jsr     Screen.toDebug
+                jsr     Pseudo.toDebug
                 jsr     Module.toDebug
                 jsr     Memory.toDebug
                 jsr     Print.toDebug

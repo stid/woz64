@@ -2,6 +2,7 @@
 #import "../libs/math.asm"
 #import "../libs/memory.asm"
 #import "../libs/module.asm"
+#import "../core/pseudo.asm"
 
 
 // ========================================================
@@ -184,7 +185,7 @@ scrollUp: {
 // --------------------------------------------------------
 sendChar: {
                 sei
-                stx     MemMap.SCREEN.tempX
+                phx
                 cmp     #CR
                 bne.r   !+
                 jsr     screenNewLine
@@ -205,7 +206,7 @@ sendChar: {
                 stx     MemMap.SCREEN.TempVideoPointer+1
 
                 // Temp Save Y
-                sty     MemMap.SCREEN.tempY
+                phy
 
                 //  CursorRow * 40
                 ldy     MemMap.SCREEN.CursorRow
@@ -256,12 +257,12 @@ sendChar: {
         !:
                 // insert into screen
                 sta     (MemMap.SCREEN.TempVideoPointer), y
-                ldy     MemMap.SCREEN.tempY
+                ply
                 iny
                 inc     MemMap.SCREEN.CursorCol
 
         exit:
-                ldx     MemMap.SCREEN.tempX
+                plx
                 cli
                 rts
 }

@@ -1,17 +1,25 @@
 .filenamespace MemMap
 #importonce
 
+.const SHELL_BUGGER_ADDR    = $3000
+.const XSTACK_ADDRESS       = $3100
+.const YSTACK_ADDRESS       = $3200
+
 *=$2 "ZERO PAGE" virtual
+
+.namespace CORE {
+    yStackOffset:      .byte 0
+    xStackOffset:      .byte 0
+
+    .label XStack       = XSTACK_ADDRESS  // 256 bytes
+    .label YStack       = YSTACK_ADDRESS  // 256 bytes
+}
 
 .namespace SCREEN {
     TempVideoPointer:   .word 0
     TempStringPointer:  .word 0
     CursorCol:          .byte 0
     CursorRow:          .byte 0
-    tempY:              .byte 0
-    tempX:              .byte 0
-    PrintPetCharY:      .byte 0
-    PrintPetCharX:      .byte 0
     ScrollUpTriggered:  .byte 0
 }
 
@@ -38,14 +46,11 @@
     from:                .word 0
     dest:                .word 0
     size:                .word 0
-    tmpX:                .byte 0
-    tmpY:                .byte 0
 }
 
 .namespace MODULE {
-    versionPtr:                .word 0
+    versionPtr:          .word 0
 }
-
 
 .namespace SHELL {
     pos:                 .byte 0
@@ -58,6 +63,8 @@
     XAML:                .byte 0
     XAMH:                .byte 0
 
-    .label buffer        = $3000  // 256 bytes
+    .label buffer        = SHELL_BUGGER_ADDR  // 256 bytes
 }
+
+
 

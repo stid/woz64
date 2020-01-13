@@ -58,14 +58,10 @@ toDebug: {
 //      A       = PET ASCII char to print
 // --------------------------------------------------------
 printPetChar: {
-                pha
-                stx     MemMap.SCREEN.PrintPetCharX
-                sty     MemMap.SCREEN.PrintPetCharY
+                phr
                 jsr     Print.petCharToScreenChar
                 jsr     Screen.sendChar
-                ldy     MemMap.SCREEN.PrintPetCharY
-                ldx     MemMap.SCREEN.PrintPetCharX
-                pla
+                plr
                 rts
 }
 

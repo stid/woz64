@@ -2,6 +2,7 @@
 #importonce
 #import "../libs/module.asm"
 #import "../libs/module.asm"
+#import "../core/pseudo.asm"
 
 
 // ========================================================
@@ -123,8 +124,7 @@ toDebug: {
 //                           copy
 // --------------------------------------------------------
 clone: {
-                stx     MemMap.MEMORY.tmpX
-                sty     MemMap.MEMORY.tmpY
+                phr
                 sei
                 ldy     #0
                 ldx     MemMap.MEMORY.size
@@ -146,8 +146,7 @@ clone: {
                 bne     md3
                 cli
         md4:
-                ldx     MemMap.MEMORY.tmpX
-                ldy     MemMap.MEMORY.tmpY
+                plr
                 rts
 }
 
@@ -163,8 +162,7 @@ clone: {
 //      A                  = The byte to fill memory with
 // --------------------------------------------------------
 fill: {
-                stx     MemMap.MEMORY.tmpX
-                sty     MemMap.MEMORY.tmpY
+                phr
                 sei
                 ldy     #0
                 ldx     MemMap.MEMORY.size
@@ -185,8 +183,7 @@ fill: {
                 bne     md3
                 cli
         md4:
-                ldx     MemMap.MEMORY.tmpX
-                ldy     MemMap.MEMORY.tmpY
+                plr
                 rts
 }
 

@@ -2,6 +2,7 @@
 #import "../libs/print.asm"
 #import "../libs/module.asm"
 #import "../core/init.asm"
+#import "../core/pseudo.asm"
 
 .filenamespace WozShell
 
@@ -11,8 +12,8 @@
 // ////// CONSTANTS ///////////////////////////////////////
 // ========================================================
 
-.const      CR  =  $0d
-.const      R   =  $52
+.const          CR      =  $0d
+.const          R       =  $52
 
 
 // ========================================================
@@ -190,7 +191,8 @@ wozExec: {
 // We're in XAM mode now
 
                 ldx     #2                          // Copy 2 bytes
-        SETADR:             lda     MemMap.SHELL.L-1,X          // Copy hex data to
+        SETADR:
+                lda     MemMap.SHELL.L-1,X          // Copy hex data to
                 sta     MemMap.SHELL.STL-1,X        // 'store index'
                 sta     MemMap.SHELL.XAML-1,X       // and to 'XAM index'
                 dex                          // Next of 2 bytes
