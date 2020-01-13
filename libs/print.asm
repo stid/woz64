@@ -10,17 +10,17 @@
 // ========================================================
 
 .macro PrintLine(stringAddr) {
-                lda #<stringAddr // Low byte
-                ldx #>stringAddr // High byte
-                jsr Print.printLine
+                lda     #<stringAddr // Low byte
+                ldx     #>stringAddr // High byte
+                jsr     Print.printLine
 }
 
 .macro PrintChar() {
-                jsr Print.printPetChar
+                jsr     Print.printPetChar
 }
 
 .macro PrintNewLine() {
-                jsr Screen.screenNewLine
+                jsr     Screen.screenNewLine
 }
 
 
@@ -78,17 +78,17 @@ printPetChar: {
 //      X       = low byte string address
 // --------------------------------------------------------
 printLine: {
-                        ldy     #$00
-                        sta     MemMap.SCREEN.TempStringPointer
-                        stx     MemMap.SCREEN.TempStringPointer+1
+                ldy     #$00
+                sta     MemMap.SCREEN.TempStringPointer
+                stx     MemMap.SCREEN.TempStringPointer+1
         printLoop:
-                        lda     (MemMap.SCREEN.TempStringPointer), y
-                        cmp     #0
-                        beq     exit
-                        jsr     Screen.sendChar
-                        jmp     printLoop
+                lda     (MemMap.SCREEN.TempStringPointer), y
+                cmp     #0
+                beq     exit
+                jsr     Screen.sendChar
+                jmp     printLoop
         exit:
-                        rts
+                rts
 }
 
 // --------------------------------------------------------
@@ -103,27 +103,29 @@ printLine: {
 //      X       = lns ascii char result
 // --------------------------------------------------------
 byteToHex:      {
-                    pha                   //save byte
-                    and #%00001111        //extract lsn
-                    tax                   //save it
-                    pla                   //recover byte
-                    lsr                   //extract...
-                    lsr                   //msn
-                    lsr
-                    lsr
-                    pha                   //save msn
-                    txa                   //lsn
-                    jsr binhex1           //generate ascii lsn
-                    tax                   //save
-                    pla                   //get msn & fall thru
-    //
-    //   convert nybble to hex ascii equivalent...
-    binhex1:        cmp #$0a
-                    bcc binhex2           //in decimal range
-                    sbc #$09              //hex compensate
-                    rts
-    binhex2:        eor #%00110000        //finalize nybble
-                    rts                   //done
+                pha                   //save byte
+                and     #%00001111        //extract lsn
+                tax                   //save it
+                pla                   //recover byte
+                lsr                   //extract...
+                lsr                   //msn
+                lsr
+                lsr
+                pha                   //save msn
+                txa                   //lsn
+                jsr     binhex1           //generate ascii lsn
+                tax                   //save
+                pla                   //get msn & fall thru
+        //
+        //   convert nybble to hex ascii equivalent...
+        binhex1:
+                cmp     #$0a
+                bcc     binhex2           //in decimal range
+                sbc     #$09              //hex compensate
+                rts
+        binhex2:
+                eor     #%00110000        //finalize nybble
+                rts                   //done
 }
 
 // --------------------------------------------------------
@@ -197,13 +199,13 @@ petCharToScreenChar: {
 // ========================================================
 
 * = * "Print Lib Data"
-module_type:    .byte Module.TYPES.LIB
-version:        .byte 1, 0, 0
+module_type:    .byte   Module.TYPES.LIB
+version:        .byte   1, 0, 0
 
 .encoding       "screencode_mixed"
 module_name:
-                .text "print"
-                .byte 0
+                .text   "print"
+                .byte   0
 
 #import "../core/mem_map.asm"
 

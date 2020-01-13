@@ -29,24 +29,24 @@
 // Module Init.
 // --------------------------------------------------------
 init: {
-                lda #64
-                sta MemMap.KEYBOARD.SYS_Lstx
-                sta MemMap.KEYBOARD.SYS_Sfdx
+                lda     #64
+                sta     MemMap.KEYBOARD.SYS_Lstx
+                sta     MemMap.KEYBOARD.SYS_Sfdx
 
-                lda #cSYS_DelayValue
-                sta MemMap.KEYBOARD.SYS_Delay
+                lda     #cSYS_DelayValue
+                sta     MemMap.KEYBOARD.SYS_Delay
 
-                lda #6
-                sta MemMap.KEYBOARD.SYS_Kount
+                lda     #6
+                sta     MemMap.KEYBOARD.SYS_Kount
 
-                lda #0
-                sta MemMap.KEYBOARD.SYS_Shflag
-                sta MemMap.KEYBOARD.SYS_Lstshf
+                lda     #0
+                sta     MemMap.KEYBOARD.SYS_Shflag
+                sta     MemMap.KEYBOARD.SYS_Lstshf
 
-                sta MemMap.KEYBOARD.SYS_Ndx
+                sta     MemMap.KEYBOARD.SYS_Ndx
 
-                lda #10
-                sta MemMap.KEYBOARD.SYS_Xmax
+                lda     #10
+                sta     MemMap.KEYBOARD.SYS_Xmax
 
                 // Clone self altering Methods to RAM
                 MemoryClone(cloneStart, cloneEnd, $1000)
@@ -58,8 +58,8 @@ init: {
 // Print debug info.
 // --------------------------------------------------------
 toDebug: {
-                    ModuleToDebug(module_type, module_name, version)
-                    rts
+                ModuleToDebug(module_type, module_name, version)
+                rts
 }
 
 // ========================================================
@@ -67,7 +67,7 @@ toDebug: {
 // ========================================================
 
 KeyMapVec:
-    .word KeyMap1, KeyMap2, KeyMap3, KeyMap4
+        .word KeyMap1, KeyMap2, KeyMap3, KeyMap4
 
 // Unshifted
 KeyMap1:
@@ -145,139 +145,151 @@ cloneStart:
 //               // Key here is in A
 // --------------------------------------------------------
 .pseudopc $1000 {
-ReadKeyb:
-                lda #<KeyMap1
-                sta @SMC_Vec
-                lda #>KeyMap1
-                sta @SMC_Vec + 1
+ReadKeyb: {
+                lda     #<KeyMap1
+                sta     @SMC_Vec
+                lda     #>KeyMap1
+                sta     @SMC_Vec + 1
 
                 // Clear Shift Flag
-                lda #$40
-                sta MemMap.KEYBOARD.SYS_Sfdx
+                lda     #$40
+                sta     MemMap.KEYBOARD.SYS_Sfdx
 
-                lda #0
-                sta MemMap.KEYBOARD.SYS_Shflag
+                lda     #0
+                sta     MemMap.KEYBOARD.SYS_Shflag
 
-                sta CIA1_KeybWrite
-                ldx CIA1_KeybRead
-                cpx #$FF
-                beq @Cleanup
+                sta     CIA1_KeybWrite
+                ldx     CIA1_KeybRead
+                cpx     #$FF
+                beq     @Cleanup
 
-                ldy #$00
+                ldy     #$00
 
-                lda #7
-                sta MemMap.KEYBOARD.KeyR
+                lda     #7
+                sta     MemMap.KEYBOARD.KeyR
 
-                lda #cKeybW_Row1
-                sta @SMC_Row + 1
-@SMC_Row:       lda #0
+                lda     #cKeybW_Row1
+                sta     @SMC_Row + 1
+        @SMC_Row:
+                lda     #0
 
-                sta CIA1_KeybWrite
+                sta     CIA1_KeybWrite
 
-@Loop_Debounce:
-                lda CIA1_KeybRead
-                cmp CIA1_KeybRead
-                bne @Loop_Debounce
+        @Loop_Debounce:
+                lda     CIA1_KeybRead
+                cmp     CIA1_KeybRead
+                bne     @Loop_Debounce
 
-                ldx #7
-@Loop_Col:      lsr
-                bcs  @NextKey
-                sta @SMC_A + 1
+                ldx     #7
+        @Loop_Col:
+                lsr
+                bcs     @NextKey
+                sta     @SMC_A + 1
 
-                lda @SMC_Vec:$FFFF,Y
+                lda     @SMC_Vec:$FFFF,Y
 
                 // If <4 then is Stop or a Shift Key
-                cmp #$05
-                bcs @NotShift // Not Shift
+                cmp     #$05
+                bcs     @NotShift // Not Shift
 
-                cmp #$03
-                beq @NotShift // Stop Key
+                cmp     #$03
+                beq     @NotShift // Stop Key
 
                 // Accumulate shift key types (SHIFT=1, COMM=2, CTRL=4)
-                ora MemMap.KEYBOARD.SYS_Shflag
-                sta MemMap.KEYBOARD.SYS_Shflag
-                bpl @SMC_A
+                ora     MemMap.KEYBOARD.SYS_Shflag
+                sta     MemMap.KEYBOARD.SYS_Shflag
+                bpl     @SMC_A
 
-@NotShift:      sty MemMap.KEYBOARD.SYS_Sfdx
+        @NotShift:
+                sty     MemMap.KEYBOARD.SYS_Sfdx
 
-@SMC_A:         lda #0
+        @SMC_A:
+                lda     #0
 
-@NextKey:       iny
+        @NextKey:
+                iny
                 dex
-                bpl @Loop_Col
+                bpl     @Loop_Col
 
                 sec
-                rol @SMC_Row + 1
-                dec MemMap.KEYBOARD.KeyR
-                bpl @SMC_Row
+                rol     @SMC_Row + 1
+                dec     MemMap.KEYBOARD.KeyR
+                bpl     @SMC_Row
 
-                jmp @ProcKeyImg
+                jmp     @ProcKeyImg
 
 // Handles the key repeat
-@Process:       ldy MemMap.KEYBOARD.SYS_Sfdx
-@SMC_Key:       lda $FFFF,Y
+        @Process:
+                ldy     MemMap.KEYBOARD.SYS_Sfdx
+        @SMC_Key:
+                lda     $FFFF,Y
                 tax
-                cpy MemMap.KEYBOARD.SYS_Lstx
-                beq @SameKey
+                cpy     MemMap.KEYBOARD.SYS_Lstx
+                beq     @SameKey
 
-                ldy #cSYS_DelayValue
-                sty MemMap.KEYBOARD.SYS_Delay     // Repeat delay counter
-                bne @Cleanup
+                ldy     #cSYS_DelayValue
+                sty     MemMap.KEYBOARD.SYS_Delay     // Repeat delay counter
+                bne     @Cleanup
 
-@SameKey:       and #$7F
-                ldy MemMap.KEYBOARD.SYS_Delay
-                beq @EndDelay
-                dec MemMap.KEYBOARD.SYS_Delay
-                bne @Exit
+        @SameKey:
+                and     #$7F
+                ldy     MemMap.KEYBOARD.SYS_Delay
+                beq     @EndDelay
+                dec     MemMap.KEYBOARD.SYS_Delay
+                bne     @Exit
 
-@EndDelay:      dec MemMap.KEYBOARD.SYS_Kount
-                bne @Exit
+        @EndDelay:
+                dec     MemMap.KEYBOARD.SYS_Kount
+                bne     @Exit
 
-                ldy #$04
-                sty MemMap.KEYBOARD.SYS_Kount
-                ldy MemMap.KEYBOARD.SYS_Ndx
+                ldy     #$04
+                sty     MemMap.KEYBOARD.SYS_Kount
+                ldy     MemMap.KEYBOARD.SYS_Ndx
                 dey
-                bpl @Exit
+                bpl     @Exit
 
 // Updates the previous key and shift storage
-@Cleanup:       ldy MemMap.KEYBOARD.SYS_Sfdx
-                sty MemMap.KEYBOARD.SYS_Lstx
-                ldy MemMap.KEYBOARD.SYS_Shflag
-                sty MemMap.KEYBOARD.SYS_Lstshf
+        @Cleanup:
+                ldy     MemMap.KEYBOARD.SYS_Sfdx
+                sty     MemMap.KEYBOARD.SYS_Lstx
+                ldy     MemMap.KEYBOARD.SYS_Shflag
+                sty     MemMap.KEYBOARD.SYS_Lstshf
 
-                cpx #$FF
-                beq @Exit
+                cpx     #$FF
+                beq     @Exit
                 txa
-                ldx MemMap.KEYBOARD.SYS_Ndx
-                cpx MemMap.KEYBOARD.SYS_Xmax
-                bcs @Exit
+                ldx     MemMap.KEYBOARD.SYS_Ndx
+                cpx     MemMap.KEYBOARD.SYS_Xmax
+                bcs     @Exit
 
-                sta MemMap.KEYBOARD.SYS_Keyd,X
+                sta     MemMap.KEYBOARD.SYS_Keyd,X
                 inx
-                stx MemMap.KEYBOARD.SYS_Ndx
+                stx     MemMap.KEYBOARD.SYS_Ndx
 
-@Exit:          lda #$7F
-                sta CIA1_KeybWrite
+        @Exit:
+                lda     #$7F
+                sta     CIA1_KeybWrite
                 rts
 
-@ProcKeyImg:
-                lda MemMap.KEYBOARD.SYS_Shflag
-                cmp #$03 // C= + SHIFT
-                bne @SetDecodeTable
-                cmp MemMap.KEYBOARD.SYS_Lstshf
-                beq @Exit
+        @ProcKeyImg:
+                lda     MemMap.KEYBOARD.SYS_Shflag
+                cmp     #$03 // C= + SHIFT
+                bne     @SetDecodeTable
+                cmp     MemMap.KEYBOARD.SYS_Lstshf
+                beq     @Exit
 
-@SetDecodeTable:
+        @SetDecodeTable:
                 asl
-                cmp #8   // CONTROL
-                bcc @Cont
-                lda #$06
-@Cont:          tax
-                lda KeyMapVec,X
-                sta @SMC_Key + 1
-                lda KeyMapVec + 1,X
-                sta @SMC_Key + 2
-                jmp @Process
+                cmp     #8   // CONTROL
+                bcc     @Cont
+                lda     #$06
+        @Cont:  tax
+                lda     KeyMapVec,X
+                sta     @SMC_Key + 1
+                lda     KeyMapVec + 1,X
+                sta     @SMC_Key + 2
+                jmp     @Process
+}
 
 // --------------------------------------------------------
 // GetKey -
@@ -287,25 +299,31 @@ ReadKeyb:
 // Result:
 //      A       = Pressed key code or 0
 // --------------------------------------------------------
-GetKey:         lda MemMap.KEYBOARD.SYS_Ndx
-                bne @IsKey
+GetKey: {
 
-@NoKey:         lda #255 // Null
+                lda     MemMap.KEYBOARD.SYS_Ndx
+                bne     @IsKey
+
+        @NoKey:
+                lda     #255 // Null
                 sec
                 rts
 
-@IsKey:         ldy MemMap.KEYBOARD.SYS_Keyd
-                ldx #0
-@Loop:          lda MemMap.KEYBOARD.SYS_Keyd + 1,X
-                sta MemMap.KEYBOARD.SYS_Keyd,X
+        @IsKey:
+                ldy     MemMap.KEYBOARD.SYS_Keyd
+                ldx     #0
+        @Loop:
+                lda     MemMap.KEYBOARD.SYS_Keyd + 1,X
+                sta     MemMap.KEYBOARD.SYS_Keyd,X
                 inx
-                cpx MemMap.KEYBOARD.SYS_Ndx
-                bne @Loop
-                dec MemMap.KEYBOARD.SYS_Ndx
+                cpx     MemMap.KEYBOARD.SYS_Ndx
+                bne     @Loop
+                dec     MemMap.KEYBOARD.SYS_Ndx
                 tya
                 clc
                 rts
-}
+
+}}
 
 * = * "Keyboard Ram End"
 
@@ -316,13 +334,13 @@ cloneEnd:
 // ========================================================
 
 * = * "Keyboard Module Data"
-module_type:            .byte Module.TYPES.CORE
-version:                .byte 1, 1, 0
+module_type:    .byte   Module.TYPES.CORE
+version:        .byte   1, 1, 0
 
 .encoding "screencode_mixed"
 module_name:
-        .text "keyboard"
-        .byte 0
+                .text   "keyboard"
+                .byte   0
 
 
 #import "../core/mem_map.asm"

@@ -26,8 +26,8 @@ init: {
 // Print debug info.
 // --------------------------------------------------------
 toDebug: {
-                    ModuleToDebug(module_type, module_name, version)
-                    rts
+                ModuleToDebug(module_type, module_name, version)
+                rts
 }
 
 // --------------------------------------------------------
@@ -47,20 +47,20 @@ multiply: {
                 txa
                 pha
 
-                lda #$00
-                ldx #$08
+                lda     #$00
+                ldx     #$08
                 clc
-    m0:         bcc.r m1
+        m0:     bcc.r   m1
                 clc
-                adc MemMap.MATH.factor2
-    m1:         ror
-                ror MemMap.MATH.factor1
+                adc     MemMap.MATH.factor2
+        m1:     ror
+                ror     MemMap.MATH.factor1
                 dex
-                bpl.r m0
-                ldx MemMap.MATH.factor1
+                bpl.r   m0
+                ldx     MemMap.MATH.factor1
 
-                sta MemMap.MATH.result
-                stx MemMap.MATH.result+1
+                sta     MemMap.MATH.result
+                stx     MemMap.MATH.result+1
 
                 pla
                 tax
@@ -75,13 +75,13 @@ multiply: {
 // ========================================================
 
 * = * "Math Lib Data"
-module_type:            .byte Module.TYPES.LIB
-version:                .byte 1, 1, 0
+module_type:    .byte Module.TYPES.LIB
+version:        .byte 1, 1, 0
 
 .encoding "screencode_mixed"
 module_name:
-        .text "math"
-        .byte 0
+                .text "math"
+                .byte 0
 
 
 #import "../core/mem_map.asm"
