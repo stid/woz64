@@ -47,7 +47,7 @@
 // Module Init.
 // --------------------------------------------------------
 init: {
-                lda     #$00
+                lda     #$FF
                 sta     MemMap.CORE.xStackOffset
                 sta     MemMap.CORE.yStackOffset
                 rts
