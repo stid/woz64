@@ -252,6 +252,7 @@ sendChar: {
                         bne     !+
                         lda     #' '
                 sta     (MemMap.SCREEN.TempVideoPointer), y
+                ply
                 jmp     exit
 
         !:
