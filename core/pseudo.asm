@@ -123,7 +123,7 @@ _ply: {
 
 * = * "Pseudo Data"
 module_type:    .byte   Module.TYPES.CORE
-version:        .byte   1, 0, 0
+version:        .byte   1, 0, 1
 
 .encoding "screencode_mixed"
 module_name:

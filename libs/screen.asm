@@ -295,7 +295,7 @@ screenNewLine: {
 
 * = * "Screen Lib Data"
 module_type:            .byte Module.TYPES.LIB
-version:                .byte 1, 0, 0
+version:                .byte 1, 0, 1
 module_name:
         .text "screen"
         .byte 0
