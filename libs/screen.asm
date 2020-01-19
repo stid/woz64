@@ -1,7 +1,7 @@
 #importonce
 #import "../libs/math.asm"
 #import "../libs/memory.asm"
-#import "../libs/module.asm"
+#import "../core/module.asm"
 #import "../core/pseudo.asm"
 
 
@@ -10,7 +10,7 @@
 // ========================================================
 
 
-* = * "Screen Module"
+* = * "Screen Lib"
 
 // --------------------------------------------------------
 // ScreenClearChunks -
@@ -292,8 +292,8 @@ screenNewLine: {
                         rts
 }
 
-* = * "Screen Module Data"
-module_type:            .byte Module.TYPES.CORE
+* = * "Screen Lib Data"
+module_type:            .byte Module.TYPES.LIB
 version:                .byte 1, 0, 0
 module_name:
         .text "screen"

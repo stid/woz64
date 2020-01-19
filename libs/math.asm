@@ -1,12 +1,12 @@
 
 #importonce
-#import "../libs/module.asm"
-#import "../libs/module.asm"
+#import "../core/module.asm"
+#import "../core/module.asm"
 
 
 .filenamespace Math
 
-* = * "Math Lin"
+* = * "Math Lib"
 
 // ========================================================
 // ////// METHODS /////////////////////////////////////////

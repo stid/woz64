@@ -1,8 +1,9 @@
 #importonce
-#import "../libs/print.asm"
-#import "../libs/module.asm"
-#import "../core/init.asm"
 #import "../core/pseudo.asm"
+#import "../core/system.asm"
+#import "../libs/print.asm"
+#import "../core/module.asm"
+#import "../libs/keyboard.asm"
 
 .filenamespace WozShell
 
@@ -12,9 +13,9 @@
 // ////// CONSTANTS ///////////////////////////////////////
 // ========================================================
 
-.const          CR      =  $0d
-.const          R       =  $52
-
+.const          R       =       $52
+.const          CR      =       $0d
+.const          BS      =       $14
 
 // ========================================================
 // ////// METHODS /////////////////////////////////////////
@@ -32,7 +33,34 @@ start: {
                 PrintLine(lineString)
                 PrintLine(aboutString)
                 PrintLine(lineString)
-                rts
+                jmp WozShell.loop
+}
+
+//------------------------------------------------------------------------------------
+loop: {
+                jsr     Keyboard.waitForKey
+
+                cmp     #CR
+                beq     execute
+
+                cmp     #BS
+                beq     backspace
+        inputChar:
+                jsr     WozShell.push                 // Char in Buffer
+                PrintChar()
+                jmp     loop
+        backspace:
+                jsr     WozShell.backspace
+                PrintChar()
+                jmp     loop
+
+        execute:
+                jsr     WozShell.push                 // CR in Buffer
+                jsr     Screen.screenNewLine
+                jsr     WozShell.exec
+                jsr     Screen.screenNewLine
+                jsr     WozShell.clear
+                jmp     loop
 }
 
 toDebug: {
@@ -81,7 +109,7 @@ stidExec: {
                 cmp     #$52 // R
                 beq     cmdReset
 
-                cmp     #$56 // Z
+                cmp     #$56 // V
                 beq     cmdZeroPageInfo
     done:
                 rts
@@ -93,7 +121,7 @@ stidExec: {
                 jmp     $fce2       // SYS 64738
 
     cmdZeroPageInfo:
-                jsr     Init.toDebug
+                jsr     System.toDebug
                 jmp     done
 }
 
@@ -237,13 +265,13 @@ wozExec: {
 // -------------------------------------------------------------------------
 
         PRBYTE:
-                pha                                 // Save A for LSD
+                pha                             // Save A for LSD
                 lsr
                 lsr
                 lsr                             // MSD to LSD position
                 lsr
-                jsr     PRHEX                     // Output hex digit
-                pla                                 // Restore A
+                jsr     PRHEX                   // Output hex digit
+                pla                             // Restore A
 
 // Fall through to print hex routine
 

@@ -1,7 +1,7 @@
 #importonce
-#import "../libs/module.asm"
+#import "../core/module.asm"
 #import "../libs/memory.asm"
-#import "../libs/module.asm"
+#import "../core/module.asm"
 
 
 .filenamespace Keyboard
@@ -18,7 +18,11 @@
 .const cSYS_DelayValue   = 32
 .const cKeybW_Row1       = $FE
 
-* = * "Keyboard Module"
+.const  RASTER_LINE     = $d012
+
+
+
+* = * "Keyboard Lib"
 
 // ========================================================
 // ////// METHODS ROM /////////////////////////////////////
@@ -49,7 +53,26 @@ init: {
                 sta     MemMap.KEYBOARD.SYS_Xmax
 
                 // Clone self altering Methods to RAM
-                MemoryClone(cloneStart, cloneEnd, $1000)
+                MemoryClone(cloneStart, cloneEnd, MemMap.KEYBOARD.keybRamCode)
+                rts
+}
+
+// --------------------------------------------------------
+// waitForKey -
+// Loop until a new key is available.
+//
+// Result:
+//      A       = Pressed key code
+// --------------------------------------------------------
+waitForKey: {
+        loop:
+                lda     #$FF
+        raster:
+                cmp     RASTER_LINE         // Raster done?
+                bne     raster
+                jsr     Keyboard.ReadKeyb
+                jsr     Keyboard.GetKey
+                bcs     loop
                 rts
 }
 
@@ -63,7 +86,7 @@ toDebug: {
 }
 
 // ========================================================
-// ////// KEYMAPPING RON //////////////////////////////////
+// ////// KEYMAPPING ROM //////////////////////////////////
 // ========================================================
 
 KeyMapVec:
@@ -144,7 +167,7 @@ cloneStart:
 //                bcs loop
 //               // Key here is in A
 // --------------------------------------------------------
-.pseudopc $1000 {
+.pseudopc MemMap.KEYBOARD.keybRamCode {
 ReadKeyb: {
                 lda     #<KeyMap1
                 sta     @SMC_Vec
@@ -333,8 +356,8 @@ cloneEnd:
 // ////// DATA ////////////////////////////////////////////
 // ========================================================
 
-* = * "Keyboard Module Data"
-module_type:    .byte   Module.TYPES.CORE
+* = * "Keyboard Lib Data"
+module_type:    .byte   Module.TYPES.LIB
 version:        .byte   1, 1, 0
 
 .encoding "screencode_mixed"

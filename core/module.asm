@@ -1,5 +1,5 @@
 #importonce
-#import "print.asm"
+#import "../libs/print.asm"
 
 // ========================================================
 // ////// MACROS //////////////////////////////////////////
@@ -101,13 +101,13 @@ printVersion: {
                 sta     MemMap.MODULE.versionPtr
                 stx     MemMap.MODULE.versionPtr+1
                 ldy     #0
-                jsr     printNext
+                jsr     printNext               // Major
                 lda     #'.'
                 PrintChar()
-                jsr     printNext
+                jsr     printNext               // Minor
                 lda     #'.'
                 PrintChar()
-                jsr     printNext
+                jsr     printNext               // Revision
                 rts
     printNext:
                 lda     (MemMap.MODULE.versionPtr), y
@@ -154,8 +154,8 @@ printType: {
 // ========================================================
 
 * = * "Module Lib Data"
-module_type:    .byte   Module.TYPES.LIB
-version:        .byte   1, 1, 0
+module_type:    .byte   Module.TYPES.CORE
+version:        .byte   1, 2, 0
 
 .encoding "screencode_mixed"
 module_name:

@@ -1,7 +1,7 @@
 
 #importonce
-#import "../libs/module.asm"
-#import "../libs/module.asm"
+#import "../core/module.asm"
+#import "../core/module.asm"
 #import "../core/pseudo.asm"
 
 
@@ -223,5 +223,5 @@ module_name:
 
 
 #import "../core/mem_map.asm"
-#import "../core/screen.asm"
+#import "../libs/screen.asm"
 

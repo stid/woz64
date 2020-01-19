@@ -1,6 +1,6 @@
 #importonce
 #import "../core/mem_map.asm"
-#import "../libs/module.asm"
+#import "../core/module.asm"
 
 
 // ========================================================

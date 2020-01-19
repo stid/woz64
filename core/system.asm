@@ -1,17 +1,18 @@
 
 #importonce
+#import "../core/pseudo.asm"
+#import "../core/module.asm"
+#import "../core/boot.asm"
 #import "../libs/memory.asm"
 #import "../libs/math.asm"
 #import "../libs/print.asm"
-#import "../core/keyboard.asm"
-#import "../core/screen.asm"
-#import "../core/pseudo.asm"
-#import "../libs/module.asm"
+#import "../libs/keyboard.asm"
+#import "../libs/screen.asm"
 #import "../progs/woz_shell.asm"
 
-.filenamespace Init
+.filenamespace System
 
-* = * "Init Core"
+* = * "System Core"
 
 
 // ========================================================
@@ -19,21 +20,41 @@
 // ========================================================
 
 // --------------------------------------------------------
+// start -
+// System Start
+// --------------------------------------------------------
+start: {
+
+
+                //      Start Main Program
+                jsr     WozShell.start
+
+                //      TODO: Program exited here
+                //      We can ask program to set a ram param and let us know
+                //      if exit is due to a sort of error.
+
+                rts
+
+                // TODO: Can we use Timed Interrupt to execute small system recurring tasks?
+}
+
+// --------------------------------------------------------
 // init -
 // Module Init.
 // --------------------------------------------------------
 init: {
                 // Init All Modules
-                jsr     Pseudo.init
-                jsr     Module.init
+                // TODO: How we can make this dynamic?
                 jsr     Memory.init
-                jsr     Math.init
-                jsr     Print.init
-                jsr     Keyboard.init
                 jsr     Screen.init
+                jsr     Print.init
+                jsr     Math.init
+                jsr     Keyboard.init
+
                 jsr     WozShell.init
                 rts
 }
+
 
 // --------------------------------------------------------
 // toDebug -
@@ -41,14 +62,18 @@ init: {
 // --------------------------------------------------------
 toDebug: {
                 // Debug All Modules
+                jsr     Boot.toDebug
                 ModuleToDebug(module_type, module_name, version)
-                jsr     Keyboard.toDebug
-                jsr     Screen.toDebug
+
                 jsr     Pseudo.toDebug
                 jsr     Module.toDebug
+
+                jsr     Keyboard.toDebug
+                jsr     Math.toDebug
                 jsr     Memory.toDebug
                 jsr     Print.toDebug
-                jsr     Math.toDebug
+                jsr     Screen.toDebug
+
                 jsr     WozShell.toDebug
                 rts
 }
@@ -58,13 +83,13 @@ toDebug: {
 // ////// DATA ////////////////////////////////////////////
 // ========================================================
 
-* = * "Init Core Data"
+* = * "System Core Data"
 module_type:    .byte   Module.TYPES.CORE
-version:        .byte   1, 1, 0
+version:        .byte   1, 0, 0
 
 .encoding "screencode_mixed"
 module_name:
-                .text   "init"
+                .text   "system"
                 .byte   0
 
 

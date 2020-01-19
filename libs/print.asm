@@ -1,8 +1,8 @@
 
 #importonce
 #import "math.asm"
-#import "../core/screen.asm"
-#import "../libs/module.asm"
+#import "../libs/screen.asm"
+#import "../core/module.asm"
 
 
 // ========================================================
@@ -75,10 +75,10 @@ printPetChar: {
 // --------------------------------------------------------
 printLine: {
                 ldy     #$00
-                sta     MemMap.SCREEN.TempStringPointer
-                stx     MemMap.SCREEN.TempStringPointer+1
+                sta     MemMap.PRINT.TempStringPointer
+                stx     MemMap.PRINT.TempStringPointer+1
         printLoop:
-                lda     (MemMap.SCREEN.TempStringPointer), y
+                lda     (MemMap.PRINT.TempStringPointer), y
                 cmp     #0
                 beq     exit
                 jsr     Screen.sendChar
