@@ -20,7 +20,7 @@
     TempStringPointer:  .word 0             // Pointer to string address as it get printend to screen
 }
 
-.namespace SCREEN {
+.namespace VIDEO {
     TempVideoPointer:   .word 0             // Pointer to video mem used to target char pos
     CursorCol:          .byte 0             // Actual cursor column position
     CursorRow:          .byte 0             // Actual cursor row position

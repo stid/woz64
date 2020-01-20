@@ -59,10 +59,12 @@
 // ========================================================
 
 .namespace TYPES {
-    .label      MAIN    = 00
-    .label      LIB     = 01
-    .label      PROG    = 02
-    .label      CORE    = 03
+    .label      MAIN            = 00
+    .label      LIB             = 01
+    .label      PROG            = 02
+    .label      CORE            = 03
+    .label      DEVICE          = 04
+
 }
 
 
@@ -141,6 +143,11 @@ printType: {
                 PrintLine(type_core)
                 rts
         !:
+                cmp     #Module.TYPES.DEVICE
+                bne     !+
+                PrintLine(type_device)
+                rts
+        !:
                 cmp     #Module.TYPES.PROG
                 bne     !+
                 PrintLine(type_prog)
@@ -176,6 +183,9 @@ type_prog:
                 .text   "prog"
                 .byte   0
 
+type_device:
+                .text   "device"
+                .byte   0
 
 #import "../core/mem_map.asm"
 

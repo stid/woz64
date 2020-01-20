@@ -1,7 +1,7 @@
 
 #importonce
 #import "math.asm"
-#import "../libs/screen.asm"
+#import "../devices/video.asm"
 #import "../core/module.asm"
 
 
@@ -20,7 +20,7 @@
 }
 
 .macro PrintNewLine() {
-                jsr     Screen.screenNewLine
+                jsr     Video.screenNewLine
 }
 
 
@@ -52,22 +52,22 @@ toDebug: {
 
 // --------------------------------------------------------
 // printPetChar -
-// Convert a Char from PET ASCII and print it out on Screen
+// Convert a Char from PET ASCII and print it out on Video
 //
 // Parameters:
 //      A       = PET ASCII char to print
 // --------------------------------------------------------
 printPetChar: {
                 phr
-                jsr     Print.petCharToScreenChar
-                jsr     Screen.sendChar
+                jsr     Print.petCharToVideoChar
+                jsr     Video.sendChar
                 plr
                 rts
 }
 
 // --------------------------------------------------------
 // printLine -
-// Print a Null terminated SCREEN ASCII string to screen.
+// Print a Null terminated VIDEO ASCII string to screen.
 //
 // Parameters:
 //      A       = low byte string address
@@ -81,7 +81,7 @@ printLine: {
                 lda     (MemMap.PRINT.TempStringPointer), y
                 cmp     #0
                 beq     exit
-                jsr     Screen.sendChar
+                jsr     Video.sendChar
                 jmp     printLoop
         exit:
                 rts
@@ -125,16 +125,16 @@ byteToHex:      {
 }
 
 // --------------------------------------------------------
-// petCharToScreenChar -
-// Convert a PET ASCII Char to a SCREEN ASCII Char
+// petCharToVideoChar -
+// Convert a PET ASCII Char to a VIDEO ASCII Char
 //
 // Parameters:
 //      A       = PET ASCII Byte to Convert
 //
 // Result:
-//      A       = Converted ASCII SCREEN Char
+//      A       = Converted ASCII VIDEO Char
 // --------------------------------------------------------
-petCharToScreenChar: {
+petCharToVideoChar: {
         // $00-$1F
                 cmp     #$1f
                 bcs     !+

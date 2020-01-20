@@ -6,11 +6,17 @@
 #import "../libs/memory.asm"
 #import "../libs/math.asm"
 #import "../libs/print.asm"
-#import "../libs/keyboard.asm"
-#import "../libs/screen.asm"
+#import "../devices/keyboard.asm"
+#import "../devices/video.asm"
 #import "../progs/woz_shell.asm"
 
 .filenamespace System
+
+// ========================================================
+// ////// CONST ///////////////////////////////////////////
+// ========================================================
+.const  MAIN_COLOR              = $03
+.const  BORDER_COLOR            = $05
 
 * = * "System Core"
 
@@ -24,8 +30,10 @@
 // System Start
 // --------------------------------------------------------
 start: {
-
-
+                VideoClearColorRam($00)
+                VideoClear(' ')
+                VideoSetBorderColor(BORDER_COLOR)
+                VideoSetBackgroundColor(MAIN_COLOR)
                 //      Start Main Program
                 jsr     WozShell.start
 
@@ -46,7 +54,7 @@ init: {
                 // Init All Modules
                 // TODO: How we can make this dynamic?
                 jsr     Memory.init
-                jsr     Screen.init
+                jsr     Video.init
                 jsr     Print.init
                 jsr     Math.init
                 jsr     Keyboard.init
@@ -72,7 +80,7 @@ toDebug: {
                 jsr     Math.toDebug
                 jsr     Memory.toDebug
                 jsr     Print.toDebug
-                jsr     Screen.toDebug
+                jsr     Video.toDebug
 
                 jsr     WozShell.toDebug
                 rts

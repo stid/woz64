@@ -1,7 +1,6 @@
 
 #importonce
 #import "../core/module.asm"
-#import "../core/module.asm"
 #import "../core/pseudo.asm"
 
 
@@ -143,7 +142,7 @@ clone: {
                 sta     (MemMap.MEMORY.dest),y
                 iny
                 dex
-                bne     md3
+                bne      md3
                 cli
         md4:
                 plr
@@ -223,5 +222,5 @@ module_name:
 
 
 #import "../core/mem_map.asm"
-#import "../libs/screen.asm"
+#import "../devices/video.asm"
 

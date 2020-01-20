@@ -3,7 +3,7 @@
 #import "../core/system.asm"
 #import "../libs/print.asm"
 #import "../core/module.asm"
-#import "../libs/keyboard.asm"
+#import "../devices/keyboard.asm"
 
 .filenamespace WozShell
 
@@ -56,9 +56,9 @@ loop: {
 
         execute:
                 jsr     WozShell.push                 // CR in Buffer
-                jsr     Screen.screenNewLine
+                jsr     Video.screenNewLine
                 jsr     WozShell.exec
-                jsr     Screen.screenNewLine
+                jsr     Video.screenNewLine
                 jsr     WozShell.clear
                 jmp     loop
 }
@@ -72,7 +72,7 @@ push: {
                 ldy     MemMap.SHELL.pos
                 iny
                 cpy     #127
-                beq.r   done
+                beq     done
                 sty     MemMap.SHELL.pos
                 sta     MemMap.SHELL.buffer, y
         done:
@@ -135,7 +135,7 @@ wozExec: {
                 asl
         SETMODE:
                 cmp     #0
-                beq.r   !+
+                beq     !+
                 eor     #%10000000
 !:
                 sta     MemMap.SHELL.MODE
@@ -145,7 +145,7 @@ wozExec: {
         NEXTITEM:
                 lda     MemMap.SHELL.buffer,Y   //Get character
                 cmp     #CR
-                bne.r   CONT                    // We're done if it's CR!
+                bne     CONT                    // We're done if it's CR!
                 rts
         CONT:
                 cmp     #'.'
@@ -317,7 +317,7 @@ helpString:
                 .byte   $8e, 0
 
 aboutString:
-                .text   "woz64 mon - v 0.1.5"
+                .text   "woz64 mon - v 1.2.0"
                 .byte   $8e, 0
 lineString:
                 .text   "----------------------------------------"

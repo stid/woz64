@@ -22,7 +22,7 @@
 
 
 
-* = * "Keyboard Lib"
+* = * "Device: Keyboard"
 
 // ========================================================
 // ////// METHODS ROM /////////////////////////////////////
@@ -356,8 +356,8 @@ cloneEnd:
 // ////// DATA ////////////////////////////////////////////
 // ========================================================
 
-* = * "Keyboard Lib Data"
-module_type:    .byte   Module.TYPES.LIB
+* = * "Device: Keyboard Data"
+module_type:    .byte   Module.TYPES.DEVICE
 version:        .byte   1, 1, 0
 
 .encoding "screencode_mixed"

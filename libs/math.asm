@@ -1,7 +1,6 @@
 
 #importonce
 #import "../core/module.asm"
-#import "../core/module.asm"
 
 
 .filenamespace Math
@@ -50,13 +49,13 @@ multiply: {
                 lda     #$00
                 ldx     #$08
                 clc
-        m0:     bcc.r   m1
+        m0:     bcc     m1
                 clc
                 adc     MemMap.MATH.factor2
         m1:     ror
                 ror     MemMap.MATH.factor1
                 dex
-                bpl.r   m0
+                bpl     m0
                 ldx     MemMap.MATH.factor1
 
                 sta     MemMap.MATH.result

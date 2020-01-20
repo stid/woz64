@@ -10,17 +10,17 @@
 // ========================================================
 
 
-* = * "Screen Lib"
+* = * "Device: Video"
 
 // --------------------------------------------------------
-// ScreenClearChunks -
+// VideoClearChunks -
 // Fast clear screen mem chunks.
 //
 // Parameters:
 //      baseAddress      = Pointer to screen orcolor map Address
 //      clearByte        = Byte to use to clear screen
 // --------------------------------------------------------
-.macro ScreenClearChunks(baseAddress, clearByte) {
+.macro VideoClearChunks(baseAddress, clearByte) {
                 lda     #clearByte
                 ldx     #0
         !loop:
@@ -29,94 +29,94 @@
                 sta     baseAddress + $200, x
                 sta     baseAddress + $300, x
                 inx
-                bne.r   !loop-
+                bne     !loop-
 }
 
 
 // --------------------------------------------------------
-// ScreenClear -
+// VideoClear -
 // Fast clear screen characters mem.
 //
 // Parameters:
 //      clearByte        = Byte to use to clear screen
 // --------------------------------------------------------
-.macro ScreenClear(clearByte) {
-                ScreenClearChunks(Screen.VIDEO_ADDR, clearByte)
+.macro VideoClear(clearByte) {
+                VideoClearChunks(Video.VIDEO_ADDR, clearByte)
 }
 
 // --------------------------------------------------------
-// ScreenClear -
+// VideoClear -
 // Fast clear screen Color Ram.
 //
 // Parameters:
 //      clearByte        = Byte to use to clear screen
 // --------------------------------------------------------
-.macro ScreenClearColorRam(clearByte) {
-                ScreenClearChunks(Screen.COLOR_ADDR, clearByte)
+.macro VideoClearColorRam(clearByte) {
+                VideoClearChunks(Video.COLOR_ADDR, clearByte)
 }
 
 // --------------------------------------------------------
-// ScreenSetBorderColor -
-// Set Screen border color.
+// VideoSetBorderColor -
+// Set Video border color.
 //
 // Parameters:
 //      color        = https://www.c64-wiki.com/wiki/Color
 // --------------------------------------------------------
-.macro ScreenSetBorderColor(color) {
+.macro VideoSetBorderColor(color) {
                 lda     #color
                 sta     $d020
 }
 
 // --------------------------------------------------------
-// ScreenSetBackgroundColor -
-// Set Screen Backfground color.
+// VideoSetBackgroundColor -
+// Set Video Backfground color.
 //
 // Parameters:
 //      color        = https://www.c64-wiki.com/wiki/Color
 // --------------------------------------------------------
-.macro ScreenSetBackgroundColor(color) {
+.macro VideoSetBackgroundColor(color) {
                 lda     #color
                 sta     $d021
 }
 
 // --------------------------------------------------------
-// ScreenSetMultiColor1 -
-// Set Screen Muticolor 1.
+// VideoSetMultiColor1 -
+// Set Video Muticolor 1.
 //
 // Parameters:
 //      color        = https://www.c64-wiki.com/wiki/Color
 // --------------------------------------------------------
-.macro ScreenSetMultiColor1(color) {
+.macro VideoSetMultiColor1(color) {
                 lda     #color
                 sta     $d022
 }
 
 // --------------------------------------------------------
-// ScreenSetMultiColor2 -
-// Set Screen Muticolor 2.
+// VideoSetMultiColor2 -
+// Set Video Muticolor 2.
 //
 // Parameters:
 //      color        = https://www.c64-wiki.com/wiki/Color
 // --------------------------------------------------------
-.macro ScreenSetMultiColor2(color) {
+.macro VideoSetMultiColor2(color) {
                 lda     #color
                 sta     $d023
 }
 
 // --------------------------------------------------------
-// ScreenSetMultiColorMode -
-// Set Screen Muticolor 2.
+// VideoSetMultiColorMode -
+// Set Video Muticolor 2.
 //
 // Parameters:
 //      color   = https://www.c64-wiki.com/wiki/Multicolor_Bitmap_Mode
 // --------------------------------------------------------
-.macro ScreenSetMultiColorMode() {
+.macro VideoSetMultiColorMode() {
                 lda	$d016
                 ora	#16
                 sta	$d016
 }
 
-.filenamespace Screen
+.filenamespace Video
 
 // ========================================================
 // ////// CONSTANTS ///////////////////////////////////////
@@ -141,8 +141,8 @@
 // --------------------------------------------------------
 init: {
                 lda     #$00
-                sta     MemMap.SCREEN.CursorCol
-                sta     MemMap.SCREEN.CursorRow
+                sta     MemMap.VIDEO.CursorCol
+                sta     MemMap.VIDEO.CursorRow
                 rts
 }
 
@@ -169,7 +169,7 @@ scrollUp: {
                 sta     VIDEO_ADDR+(COLUMN_NUM*(ROWS_NUM-1)), x
                 dex
                 bpl     !-                                                  // x == -1
-                dec     MemMap.SCREEN.CursorRow
+                dec     MemMap.VIDEO.CursorRow
                 pla
                 rts
 }
@@ -181,35 +181,35 @@ scrollUp: {
 // end of screen scrolling and Backspace.
 //
 // Parameters:
-//      A       = Character to Print SCREEN ASCII
+//      A       = Character to Print VIDEO ASCII
 // --------------------------------------------------------
 sendChar: {
                 sei
                 phx
                 cmp     #CR
-                bne.r   !+
+                bne     !+
                 jsr     screenNewLine
                 iny
                 jmp     exit
         !:
                 cmp     #BS
-                bne.r   !+
-                ldx     MemMap.SCREEN.CursorCol
+                bne     !+
+                ldx     MemMap.VIDEO.CursorCol
                 cmp     #0
                 beq     exit
-                dec     MemMap.SCREEN.CursorCol
+                dec     MemMap.VIDEO.CursorCol
         !:
                 // Store Base Video Address 16 bit
                 ldx     #<VIDEO_ADDR         // Low byte
-                stx     MemMap.SCREEN.TempVideoPointer
+                stx     MemMap.VIDEO.TempVideoPointer
                 ldx     #>VIDEO_ADDR         // High byte
-                stx     MemMap.SCREEN.TempVideoPointer+1
+                stx     MemMap.VIDEO.TempVideoPointer+1
 
                 // Temp Save Y
                 phy
 
                 //  CursorRow * 40
-                ldy     MemMap.SCREEN.CursorRow
+                ldy     MemMap.VIDEO.CursorRow
                 sty     MemMap.MATH.factor1
                 ldy     #COLUMN_NUM
                 sty     MemMap.MATH.factor2
@@ -219,28 +219,28 @@ sendChar: {
                 clc
                 pha
                 lda     MemMap.MATH.result
-                adc     MemMap.SCREEN.TempVideoPointer+1
-                sta     MemMap.SCREEN.TempVideoPointer+1
+                adc     MemMap.VIDEO.TempVideoPointer+1
+                sta     MemMap.VIDEO.TempVideoPointer+1
                 lda     MemMap.MATH.result+1
-                adc     MemMap.SCREEN.TempVideoPointer
-                sta     MemMap.SCREEN.TempVideoPointer
+                adc     MemMap.VIDEO.TempVideoPointer
+                sta     MemMap.VIDEO.TempVideoPointer
 
-                ldy     MemMap.SCREEN.CursorCol
+                ldy     MemMap.VIDEO.CursorCol
                 cpy     #COLUMN_NUM                     // Is this > col num?
-                bcc.r   noEndOfLine
+                bcc     noEndOfLine
                 jsr     screenNewLine                   // Yes? Add new list first
 
                 ldy     #1
-                cpy     MemMap.SCREEN.ScrollUpTriggered
+                cpy     MemMap.VIDEO.ScrollUpTriggered
                 bne     noScrollTriggered
 
                 // Compensate Scroll
                 sec
-                lda     MemMap.SCREEN.TempVideoPointer
+                lda     MemMap.VIDEO.TempVideoPointer
                 sbc     #1
-                sta     MemMap.SCREEN.TempVideoPointer
+                sta     MemMap.VIDEO.TempVideoPointer
                 bcs     !+
-                dec     MemMap.SCREEN.TempVideoPointer+1
+                dec     MemMap.VIDEO.TempVideoPointer+1
         !:
 
         noScrollTriggered:
@@ -251,16 +251,16 @@ sendChar: {
                 cmp     #BS
                         bne     !+
                         lda     #' '
-                sta     (MemMap.SCREEN.TempVideoPointer), y
+                sta     (MemMap.VIDEO.TempVideoPointer), y
                 ply
                 jmp     exit
 
         !:
                 // insert into screen
-                sta     (MemMap.SCREEN.TempVideoPointer), y
+                sta     (MemMap.VIDEO.TempVideoPointer), y
                 ply
                 iny
-                inc     MemMap.SCREEN.CursorCol
+                inc     MemMap.VIDEO.CursorCol
 
         exit:
                 plx
@@ -276,28 +276,28 @@ sendChar: {
 screenNewLine: {
                         pha
                         lda     #0
-                        sta     MemMap.SCREEN.CursorCol
+                        sta     MemMap.VIDEO.CursorCol
                         lda     #ROWS_NUM-1
-                        cmp     MemMap.SCREEN.CursorRow         // Are we at the screen bottom?
+                        cmp     MemMap.VIDEO.CursorRow         // Are we at the screen bottom?
                         bne     noScrollUp
-                        jsr     Screen.scrollUp
+                        jsr     Video.scrollUp
                         lda     #1                              // Yes - Scroll up
-                        sta     MemMap.SCREEN.ScrollUpTriggered
+                        sta     MemMap.VIDEO.ScrollUpTriggered
                         jmp     done
         noScrollUp:
                         lda     #0
-                        sta     MemMap.SCREEN.ScrollUpTriggered
+                        sta     MemMap.VIDEO.ScrollUpTriggered
         done:
-                        inc     MemMap.SCREEN.CursorRow
+                        inc     MemMap.VIDEO.CursorRow
                         pla
                         rts
 }
 
-* = * "Screen Lib Data"
-module_type:            .byte Module.TYPES.LIB
+* = * "Device: Video Data"
+module_type:            .byte Module.TYPES.DEVICE
 version:                .byte 1, 0, 1
 module_name:
-        .text "screen"
+        .text "video"
         .byte 0
 
 #import "../core/mem_map.asm"
