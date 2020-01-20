@@ -74,8 +74,8 @@ initIRQ: {
                 sta     Cia.C2DDRA
 
                 // SET UP THE 6510 LINES
-                lda     #%11100111      // MOTOR ON, HIRAM LOWRAM CHAREN HIGH
-                sta     MC6502.ZR1      // set 1110 0111, motor off, enable I/O, enable KERNAL, Disable BASIC
+                lda     #%00110111      // MOTOR OFF, HIRAM LOWRAM CHAREN HIGH
+                sta     MC6502.ZR1      // set 1110 0111, motor off, enable I/O, enable KERNAL, Enable BASIC
 
                 lda     #%00101111      // set 0010 1111, 0 = input, 1 = output
                 sta     MC6502.ZR0      // save the 6510 I/O port direction register

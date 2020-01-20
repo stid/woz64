@@ -9,7 +9,6 @@
 // ////// MACROS //////////////////////////////////////////
 // ========================================================
 
-
 * = * "Device: Video"
 
 // --------------------------------------------------------
@@ -228,16 +227,16 @@ sendChar: {
                 ldy     MemMap.VIDEO.CursorCol
                 cpy     #COLUMN_NUM                     // Is this > col num?
                 bcc     noEndOfLine
-                jsr     screenNewLine                   // Yes? Add new list first
+                jsr     screenNewLine                   // Yes? Add new line first
 
-                ldy     #1
-                cpy     MemMap.VIDEO.ScrollUpTriggered
+                lda     #1
+                cmp     MemMap.VIDEO.ScrollUpTriggered
                 bne     noScrollTriggered
 
                 // Compensate Scroll
                 sec
                 lda     MemMap.VIDEO.TempVideoPointer
-                sbc     #1
+                sbc     #40
                 sta     MemMap.VIDEO.TempVideoPointer
                 bcs     !+
                 dec     MemMap.VIDEO.TempVideoPointer+1
@@ -249,8 +248,8 @@ sendChar: {
 
                 // This is a backspace
                 cmp     #BS
-                        bne     !+
-                        lda     #' '
+                bne     !+
+                lda     #' '
                 sta     (MemMap.VIDEO.TempVideoPointer), y
                 ply
                 jmp     exit

@@ -17,6 +17,8 @@
 .const          CR      =       $0d
 .const          BS      =       $14
 
+.const          MAX_CMD_BUFFER  = 40
+
 // ========================================================
 // ////// METHODS /////////////////////////////////////////
 // ========================================================
@@ -47,6 +49,8 @@ loop: {
                 beq     backspace
         inputChar:
                 jsr     WozShell.push                 // Char in Buffer
+                cpy     #MAX_CMD_BUFFER
+                beq     loop
                 PrintChar()
                 jmp     loop
         backspace:
@@ -71,7 +75,7 @@ toDebug: {
 push: {
                 ldy     MemMap.SHELL.pos
                 iny
-                cpy     #127
+                cpy     #MAX_CMD_BUFFER
                 beq     done
                 sty     MemMap.SHELL.pos
                 sta     MemMap.SHELL.buffer, y
