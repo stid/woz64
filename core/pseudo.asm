@@ -1,5 +1,5 @@
 #importonce
-#import "../core/mem_map.asm"
+#import "../hardware/mem_map.asm"
 #import "../core/module.asm"
 
 

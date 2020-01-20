@@ -300,4 +300,4 @@ module_name:
         .text "video"
         .byte 0
 
-#import "../core/mem_map.asm"
+#import "../hardware/mem_map.asm"

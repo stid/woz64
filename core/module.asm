@@ -187,5 +187,5 @@ type_device:
                 .text   "device"
                 .byte   0
 
-#import "../core/mem_map.asm"
+#import "../hardware/mem_map.asm"
 

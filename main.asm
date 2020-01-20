@@ -1,7 +1,7 @@
 .cpu _6502
 
 //BasicUpstart2(Boot.warmStart)
-#import "./core/mem_map.asm"
+#import "./hardware/mem_map.asm"
 
 * = $8000 "Main"
 

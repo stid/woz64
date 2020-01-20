@@ -101,5 +101,5 @@ module_name:
                 .byte   0
 
 
-#import "../core/mem_map.asm"
+#import "../hardware/mem_map.asm"
 

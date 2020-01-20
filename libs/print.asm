@@ -203,5 +203,5 @@ module_name:
                 .text   "print"
                 .byte   0
 
-#import "../core/mem_map.asm"
+#import "../hardware/mem_map.asm"
 
