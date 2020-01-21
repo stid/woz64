@@ -142,6 +142,8 @@ init: {
                 lda     #$00
                 sta     MemMap.VIDEO.CursorCol
                 sta     MemMap.VIDEO.CursorRow
+                lda     #%00000000
+                sta     MemMap.VIDEO.StatusBitsA
                 rts
 }
 
@@ -229,9 +231,14 @@ sendChar: {
                 bcc     noEndOfLine
                 jsr     screenNewLine                   // Yes? Add new line first
 
-                lda     #1
-                cmp     MemMap.VIDEO.ScrollUpTriggered
+                bitTest(%00000001, MemMap.VIDEO.StatusBitsA)
+                //lda     #%00000001
+                //bit     MemMap.VIDEO.StatusBitsA
                 bne     noScrollTriggered
+
+                // lda     #1
+                // cmp     MemMap.VIDEO.ScrollUpTriggered
+                // bne     noScrollTriggered
 
                 // Compensate Scroll
                 sec
@@ -245,7 +252,6 @@ sendChar: {
         noScrollTriggered:
         noEndOfLine:
                 pla
-
                 // This is a backspace
                 cmp     #BS
                 bne     !+
@@ -253,7 +259,6 @@ sendChar: {
                 sta     (MemMap.VIDEO.TempVideoPointer), y
                 ply
                 jmp     exit
-
         !:
                 // insert into screen
                 sta     (MemMap.VIDEO.TempVideoPointer), y
@@ -280,12 +285,27 @@ screenNewLine: {
                         cmp     MemMap.VIDEO.CursorRow         // Are we at the screen bottom?
                         bne     noScrollUp
                         jsr     Video.scrollUp
-                        lda     #1                              // Yes - Scroll up
-                        sta     MemMap.VIDEO.ScrollUpTriggered
+
+                        bitSet(%00000001, MemMap.VIDEO.StatusBitsA)
+
+
+                        //lda #%00000001
+                        //ora MemMap.VIDEO.StatusBitsA
+                        //sta MemMap.VIDEO.StatusBitsA
+
+                        // lda     #1                              // Yes - Scroll up
+                        // sta     MemMap.VIDEO.ScrollUpTriggered
                         jmp     done
         noScrollUp:
-                        lda     #0
-                        sta     MemMap.VIDEO.ScrollUpTriggered
+
+                        bitClear(%00000001, MemMap.VIDEO.StatusBitsA)
+
+                        // lda #%11111110
+                        // and MemMap.VIDEO.StatusBitsA
+                        // sta MemMap.VIDEO.StatusBitsA
+
+                        //lda     #0
+                        //sta     MemMap.VIDEO.ScrollUpTriggered
         done:
                         inc     MemMap.VIDEO.CursorRow
                         pla

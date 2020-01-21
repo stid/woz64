@@ -3,7 +3,9 @@
 #import "../core/system.asm"
 #import "../libs/print.asm"
 #import "../core/module.asm"
+#import "../hardware/vic.asm"
 #import "../devices/keyboard.asm"
+#import "../hardware/mem_map.asm"
 
 .filenamespace WozShell
 
@@ -35,8 +37,48 @@ start: {
                 PrintLine(lineString)
                 PrintLine(aboutString)
                 PrintLine(lineString)
+
+                //jsr WozShell.startCursor
                 jmp WozShell.loop
 }
+
+startCursor: {
+                sei
+                lda #$01
+                sta Vic.INTE
+
+                lda #<cursortInt
+                ldx #>cursortInt
+
+                sta $314    // store in $314/$315
+                stx $315
+
+                lda #$00
+                sta Vic.RCNT
+
+                lda $d011
+                and #$7f
+                sta $d011
+
+                cli
+
+                rts
+
+        cursortInt: {
+                dec $d019       // ACK INT
+
+
+
+                pla
+                tay
+                pla
+                tax
+                pla
+                rti
+        }
+}
+
+
 
 //------------------------------------------------------------------------------------
 loop: {
@@ -291,7 +333,6 @@ wozExec: {
         !:
                 PrintChar()
                 rts
-
 }
 
 
@@ -301,7 +342,7 @@ wozExec: {
 
 * = * "WozShell Data"
 module_type:    .byte   Module.TYPES.PROG
-version:        .byte   1, 2, 0
+version:        .byte   1, 5, 0
 
 .encoding "screencode_mixed"
 module_name:
@@ -321,7 +362,7 @@ helpString:
                 .byte   $8e, 0
 
 aboutString:
-                .text   "woz64 mon - v 1.2.0"
+                .text   "woz64 mon - v 1.5.0"
                 .byte   $8e, 0
 lineString:
                 .text   "----------------------------------------"

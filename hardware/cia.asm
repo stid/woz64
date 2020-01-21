@@ -1,5 +1,7 @@
 #importonce
 
+#import "../hardware/sid.asm"
+
 .filenamespace Cia
 // https://www.c64-wiki.com/wiki/CIA
 
@@ -206,4 +208,46 @@
                                         //  %10 = Timer counts underflow of timer A
                                         //  %11 = Timer counts underflow of timer A if the CNT-pin is high
                                         // Bit 7: 0 = Writing into the TOD register sets the clock time, 1 = Writing into the TOD register sets the alarm time.
+
+
+
+// ========================================================
+// ////// METHODS /////////////////////////////////////////
+// ========================================================
+
+
+* = * "CIA HW"
+
+init: {
+                lda     #$7F            // KILL INTERRUPTS
+                sta     Cia.C1ICR
+                sta     Cia.C2ICR
+
+                sta     Cia.C1PRA       // TURN ON STOP KEY
+
+                lda     #%00001000      // SHUT OFF TIMERS
+                sta     Cia.C1CRA
+                sta     Cia.C2CRA
+                sta     Cia.C1CRB
+                sta     Cia.C2CRB
+
+                // CONFIGURE PORTS
+                ldx     #$00            // SET UP KEYBOARD INPUTS
+                stx     Cia.C1DDRB      // KEYBOARD INPUTS
+                stx     Cia.C2DDRB      // USER PORT (NO RS-232)
+
+                stx     Sid.FMVC       // TURN OFF SID
+
+                dex                     // set X = $FF
+
+                stx     Cia.C1DDRA      // KEYBOARD OUTPUTS
+
+                lda     #%00000111      // SET SERIAL/VA14/15 (CLKHI)
+                sta     Cia.C2PRA
+
+                lda     #%00111111      // ;SET SERIAL IN/OUT, VA14/15OUT
+                sta     Cia.C2DDRA
+
+                rts
+}
 

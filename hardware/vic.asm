@@ -9,7 +9,10 @@
 
 .label          VICREG = $D000
 
-.label          CR2 = $D016  // Control register 2
+.label          CR2     = $D016      // Control register 2
+.label          INTE    = $D01A      // Interrupt enabled
+.label          RCNT    = $D012      // Raster counter
+
 
 
 * = * "VIC Functions"

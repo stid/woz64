@@ -24,7 +24,9 @@
     TempVideoPointer:   .word 0             // Pointer to video mem used to target char pos
     CursorCol:          .byte 0             // Actual cursor column position
     CursorRow:          .byte 0             // Actual cursor row position
-    ScrollUpTriggered:  .byte 0             // Set to 1 if a scroll up was triggered
+    StatusBitsA:        .byte 0             // Status Bits
+                                                // Bit0:    ScrollUpTriggred if ON
+
 }
 
 .namespace MATH {

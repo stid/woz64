@@ -4,6 +4,34 @@
 
 
 // ========================================================
+// ////// PSEUDO MACROS ///////////////////////////////////
+// ========================================================
+
+.macro bitSet(bitMask, address) {
+    lda #bitMask
+    ora address
+    sta address
+}
+
+.macro bitClear(bitMask, address) {
+    lda #~bitMask
+    and address
+    sta address
+}
+
+.macro bitToggle(bitMask, address) {
+    lda #bitMask
+    eor address
+    sta address
+}
+
+.macro bitTest(bitMask, address) {
+    lda #bitMask
+    bit address
+}
+
+
+// ========================================================
 // ////// PSEUDO COMMANDS /////////////////////////////////
 // ========================================================
 
