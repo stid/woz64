@@ -217,8 +217,9 @@ sendChar: {
                 jsr     Math.multiply
 
                 //  Add mul result to TempVideoPointer
-                clc
                 pha
+
+                clc
                 lda     MemMap.MATH.result
                 adc     MemMap.VIDEO.TempVideoPointer+1
                 sta     MemMap.VIDEO.TempVideoPointer+1
@@ -232,13 +233,7 @@ sendChar: {
                 jsr     screenNewLine                   // Yes? Add new line first
 
                 bitTest(%00000001, MemMap.VIDEO.StatusBitsA)
-                //lda     #%00000001
-                //bit     MemMap.VIDEO.StatusBitsA
                 bne     noScrollTriggered
-
-                // lda     #1
-                // cmp     MemMap.VIDEO.ScrollUpTriggered
-                // bne     noScrollTriggered
 
                 // Compensate Scroll
                 sec
@@ -288,24 +283,10 @@ screenNewLine: {
 
                         bitSet(%00000001, MemMap.VIDEO.StatusBitsA)
 
-
-                        //lda #%00000001
-                        //ora MemMap.VIDEO.StatusBitsA
-                        //sta MemMap.VIDEO.StatusBitsA
-
-                        // lda     #1                              // Yes - Scroll up
-                        // sta     MemMap.VIDEO.ScrollUpTriggered
                         jmp     done
         noScrollUp:
 
                         bitClear(%00000001, MemMap.VIDEO.StatusBitsA)
-
-                        // lda #%11111110
-                        // and MemMap.VIDEO.StatusBitsA
-                        // sta MemMap.VIDEO.StatusBitsA
-
-                        //lda     #0
-                        //sta     MemMap.VIDEO.ScrollUpTriggered
         done:
                         inc     MemMap.VIDEO.CursorRow
                         pla

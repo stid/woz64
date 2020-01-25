@@ -3,6 +3,69 @@
 #import "../core/module.asm"
 
 
+// ========================================================
+// ////// MACROS //////////////////////////////////////////
+// ========================================================
+
+.macro inc16(addreess) {
+                inc     addreess
+                bne     !+
+                inc     addreess +1
+        !:
+}
+
+
+.macro dec16(addreess) {
+                lda     addreess
+                bne     !+
+                dec     addreess+1
+        !:      dec     addreess
+}
+
+.macro asl16(valueA, resultAddress) {
+                .if (valueA > resultAddress) {
+                        clc
+                        lda     valueA
+                        asl
+                        sta     resultAddress
+                        lda     valueA+1
+                        rol
+                        sta     resultAddress+1
+                } else {
+                        asl     valueA+0
+                        rol     valueA+1
+                }
+}
+
+
+
+.macro add16(valueA, valueB, resultAddress) {
+                .if (valueA != valueB) {
+                        clc
+                        lda valueA
+                        adc valueB
+                        sta resultAddress
+                        lda valueA+1
+                        adc valueB+1
+                        sta resultAddress+1
+                }
+                else {
+                        .break
+                        asl16(valueA, resultAddress)
+                }
+}
+
+.macro sub16(valueA, valueB, resultAddress) {
+                sec
+                lda     valueA
+                sbc     valueB
+                sta     resultAddress
+                lda     valueA+1
+                sbc     valueB+1
+                sta     resultAddress+1
+}
+
+
 .filenamespace Math
 
 * = * "Math Lib"
