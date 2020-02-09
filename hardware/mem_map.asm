@@ -10,10 +10,7 @@
 
 .namespace CORE {
     //  PHx/PLx pseudo commands
-    yStackOffset:      .byte 0              // Y Stack offset used by phy/ply
-    xStackOffset:      .byte 0              // X Stack offset used by phx/plx
-    .label XStack       = XSTACK_ADDRESS    // 256 bytes phy/ply stack buffer pointer
-    .label YStack       = YSTACK_ADDRESS    // 256 bytes phx/plx stack buffer pointer
+    tmpA:              .byte 0              // TMP A
 }
 
 .namespace PRINT {
