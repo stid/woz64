@@ -2,12 +2,18 @@
 #import "../core/pseudo.asm"
 #import "../core/system.asm"
 #import "../libs/print.asm"
+#import "../libs/timers.asm"
 #import "../core/module.asm"
 #import "../hardware/vic.asm"
 #import "../devices/keyboard.asm"
+#import "../devices/video.asm"
 #import "../hardware/mem_map.asm"
 
 .filenamespace WozShell
+
+
+
+
 
 * = * "WozShell Routines"
 
@@ -156,7 +162,12 @@ stidExec: {
                 beq     cmdReset
 
                 cmp     #$56 // V
-                beq     cmdZeroPageInfo
+                beq     cmdSysInfo
+
+                .break
+                cmp     #$54 // T
+                beq     cmdTest
+
     done:
                 rts
     // STID Commands
@@ -166,9 +177,48 @@ stidExec: {
     cmdReset:
                 jmp     $fce2       // SYS 64738
 
-    cmdZeroPageInfo:
+    cmdSysInfo:
                 jsr     System.toDebug
                 jmp     done
+
+    cmdTest:  {
+                // TODO: Optizime for code size here
+                        ldy     #1
+                loop:
+                        tya
+                        jsr     clearVideo
+                        jsr     clearColors
+                        jsr     Timers.delayOne
+                        iny
+                        bne     loop
+                        VideoClearColorRam($03)
+
+                        jmp     done
+
+        clearVideo: {
+                        ldx     #0
+                !loop:
+                        sta     $0400, x
+                        sta     $0400 + $100, x
+                        sta     $0400 + $200, x
+                        sta     $0400 + $300, x
+                        inx
+                        bne     !loop-
+                        rts
+        }
+
+        clearColors: {
+                        ldx     #0
+                !loop:
+                        sta     $d800, x
+                        sta     $d800 + $100, x
+                        sta     $d800 + $200, x
+                        sta     $d800 + $300, x
+                        inx
+                        bne     !loop-
+                        rts
+        }
+    }
 }
 
 
@@ -362,7 +412,7 @@ helpString:
                 .byte   $8e, 0
 
 aboutString:
-                .text   "woz64 mon - v 1.5.0"
+                .text   "woz64 mon - v 1.6.0"
                 .byte   $8e, 0
 lineString:
                 .text   "----------------------------------------"

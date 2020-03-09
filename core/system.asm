@@ -9,14 +9,16 @@
 #import "../devices/keyboard.asm"
 #import "../devices/video.asm"
 #import "../progs/woz_shell.asm"
+//#import "../progs/stid_shell.asm"
+
 
 .filenamespace System
 
 // ========================================================
 // ////// CONST ///////////////////////////////////////////
 // ========================================================
-.const  MAIN_COLOR              = $03
-.const  BORDER_COLOR            = $05
+.const  MAIN_COLOR              = $00
+.const  BORDER_COLOR            = $c
 
 * = * "System Core"
 
@@ -30,12 +32,13 @@
 // System Start
 // --------------------------------------------------------
 start: {
-                VideoClearColorRam($00)
+                VideoClearColorRam($03)
                 VideoClear(' ')
                 VideoSetBorderColor(BORDER_COLOR)
                 VideoSetBackgroundColor(MAIN_COLOR)
                 //      Start Main Program
                 jsr     WozShell.start
+                //jsr     StidShell.start
 
                 //      TODO: Program exited here
                 //      We can ask program to set a ram param and let us know
@@ -60,6 +63,7 @@ init: {
                 jsr     Keyboard.init
 
                 jsr     WozShell.init
+                //jsr     StidShell.init
                 rts
 }
 
@@ -83,6 +87,7 @@ toDebug: {
                 jsr     Video.toDebug
 
                 jsr     WozShell.toDebug
+                //jsr     StidShell.toDebug
                 rts
 }
 

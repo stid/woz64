@@ -23,13 +23,11 @@
     CursorRow:          .byte 0             // Actual cursor row position
     StatusBitsA:        .byte 0             // Status Bits
                                                 // Bit0:    ScrollUpTriggred if ON
-
 }
 
 .namespace MATH {
     factor1:            .byte 0             // Factor 1 used in MUL ops
     factor2:            .byte 0             // Factor 2 used in MUL ops
-
     result:             .word 0             // 16 Bit math operation result
 }
 
@@ -54,6 +52,11 @@
     size:                .word 0
 }
 
+
+.namespace TIMERS {
+    counter:            .byte 0             // Factor 1 used in MUL ops
+}
+
 .namespace MODULE {
     versionPtr:          .word 0
 }
@@ -72,5 +75,12 @@
     .label buffer        = SHELL_BUFFER_ADDR  // 256 bytes
 }
 
+.namespace STID_SHELL {
+    pos:                 .byte 0
+    mode:                .byte 0
+    sAddr:               .word 0
+    eAddr:               .word 0
+    .label buffer        = SHELL_BUFFER_ADDR  // 256 bytes
+}
 
 

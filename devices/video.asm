@@ -32,6 +32,7 @@
 }
 
 
+
 // --------------------------------------------------------
 // VideoClear -
 // Fast clear screen characters mem.

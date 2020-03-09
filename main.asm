@@ -12,7 +12,11 @@
 #import "./core/boot.asm"
 
 * = * "Kernel Data"
-* = $9FFF "EpromFiller"
+
+* = $9FFF "EpromFiller" // 8K Cartridge, $8000-$9FFF (ROML / ROMH).
+// * = $BFFF "EpromFiller" // 16K Cartridge, $8000-$9FFF / $A000-$BFFF (ROML / ROMH).
+                        // GAME = 0, EXROM = 0
+                        // ROML/ROMH are read only, Basic ROM is overwritten by ROMH.
                 .byte 0
 
 

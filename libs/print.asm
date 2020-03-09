@@ -99,29 +99,22 @@ printLine: {
 //      X       = lns ascii char result
 // --------------------------------------------------------
 byteToHex:      {
-                pha                   //save byte
-                and     #%00001111        //extract lsn
-                tax                   //save it
-                pla                   //recover byte
-                lsr                   //extract...
-                lsr                   //msn
+                pha
+                jsr !+
+                tax
+                pla
                 lsr
                 lsr
-                pha                   //save msn
-                txa                   //lsn
-                jsr     binhex1           //generate ascii lsn
-                tax                   //save
-                pla                   //get msn & fall thru
-        //
-        //   convert nybble to hex ascii equivalent...
-        binhex1:
-                cmp     #$0a
-                bcc     binhex2           //in decimal range
-                sbc     #$09              //hex compensate
+                lsr
+                lsr
+
+        !:	and #$0f
+                cmp #$0a
+                bcc !+
+                adc #6
+
+        !:	adc #'0'
                 rts
-        binhex2:
-                eor     #%00110000        //finalize nybble
-                rts                   //done
 }
 
 // --------------------------------------------------------
