@@ -16,168 +16,7 @@
 .const p09 = $09
 .const p0b = $0b
 //
-.const f0000 = $0000
-.const f0100 = $0100
-.const f0200 = $0200
-.const f0300 = $0300
-.const f0400 = $0400
-.const f0408 = $0408
-.const f0450 = $0450
-.const f0478 = $0478
-.const f04a0 = $04a0
-.const f04c8 = $04c8
-.const f04f0 = $04f0
-.const f0500 = $0500
-.const f0518 = $0518
-.const f0600 = $0600
-.const f0630 = $0630
-.const f0658 = $0658
-.const f0700 = $0700
-.const f0748 = $0748
-.const f07c0 = $07c0
-.const f0800 = $0800
-.const f0900 = $0900
-.const f0a00 = $0a00
-.const f0b00 = $0b00
-.const f0c00 = $0c00
-.const f0d00 = $0d00
-.const f0e00 = $0e00
-.const f0f00 = $0f00
-.const fcfff = $cfff
-.const fd800 = $d800
-.const fd900 = $d900
-.const fda00 = $da00
-.const fda30 = $da30
-.const fda58 = $da58
-.const fdb00 = $db00
-.const fdb48 = $db48
-.const fdc07 = $dc07
-.const fdd07 = $dd07
-//
-.const a045d = $045d
-.const a045e = $045e
-.const a045f = $045f
-.const a0485 = $0485
-.const a0486 = $0486
-.const a0487 = $0487
-.const a04ad = $04ad
-.const a04ae = $04ae
-.const a04af = $04af
-.const a04d5 = $04d5
-.const a04d6 = $04d6
-.const a04d7 = $04d7
-.const a04fd = $04fd
-.const a04fe = $04fe
-.const a04ff = $04ff
-.const a0699 = $0699
-.const a069a = $069a
-.const a069b = $069b
-.const a06a4 = $06a4
-.const a06a5 = $06a5
-.const a06a6 = $06a6
-.const a06c1 = $06c1
-.const a06c2 = $06c2
-.const a06c3 = $06c3
-.const a06cc = $06cc
-.const a06cd = $06cd
-.const a06ce = $06ce
-.const a06e9 = $06e9
-.const a06ea = $06ea
-.const a06eb = $06eb
-.const a06f4 = $06f4
-.const a06f5 = $06f5
-.const a06f6 = $06f6
-.const a0711 = $0711
-.const a0712 = $0712
-.const a0713 = $0713
-.const a071c = $071c
-.const a071d = $071d
-.const a071e = $071e
-.const a07c6 = $07c6
-.const a07c7 = $07c7
-.const a07c8 = $07c8
-.const a07c9 = $07c9
-.const a07d3 = $07d3
-.const a07d4 = $07d4
-.const a07d5 = $07d5
-.const a07d6 = $07d6
-.const a07d7 = $07d7
-.const a07d8 = $07d8
-.const a07d9 = $07d9
-.const a07da = $07da
-.const a07db = $07db
-.const a07dc = $07dc
-.const a07de = $07de
-.const a07df = $07df
-.const a07e0 = $07e0
-.const a07e1 = $07e1
-.const a07e2 = $07e2
-.const a07e3 = $07e3
-.const a07e4 = $07e4
-.const a07e5 = $07e5
-.const a07e6 = $07e6
-.const a07e7 = $07e7
-.const ad020 = $d020
-.const ad021 = $d021
-.const ad400 = $d400
-.const ad401 = $d401
-.const ad402 = $d402
-.const ad403 = $d403
-.const ad404 = $d404
-.const ad405 = $d405
-.const ad406 = $d406
-.const ad407 = $d407
-.const ad408 = $d408
-.const ad409 = $d409
-.const ad40a = $d40a
-.const ad40b = $d40b
-.const ad40c = $d40c
-.const ad40d = $d40d
-.const ad40e = $d40e
-.const ad40f = $d40f
-.const ad410 = $d410
-.const ad411 = $d411
-.const ad412 = $d412
-.const ad413 = $d413
-.const ad414 = $d414
-.const ad417 = $d417
-.const ad418 = $d418
-.const ada99 = $da99
-.const ada9a = $da9a
-.const ada9b = $da9b
-.const adaa4 = $daa4
-.const adaa5 = $daa5
-.const adaa6 = $daa6
-.const adac1 = $dac1
-.const adac2 = $dac2
-.const adac3 = $dac3
-.const adacc = $dacc
-.const adacd = $dacd
-.const adace = $dace
-.const adae9 = $dae9
-.const adaea = $daea
-.const adaeb = $daeb
-.const adaf4 = $daf4
-.const adaf5 = $daf5
-.const adaf6 = $daf6
-.const adb11 = $db11
-.const adb12 = $db12
-.const adb13 = $db13
-.const adb1c = $db1c
-.const adb1d = $db1d
-.const adb1e = $db1e
-.const adc08 = $dc08
-.const adc09 = $dc09
-.const adc0a = $dc0a
-.const adc0b = $dc0b
-.const adc0e = $dc0e
-.const adc0f = $dc0f
-.const add08 = $dd08
-.const add09 = $dd09
-.const add0a = $dd0a
-.const add0b = $dd0b
-.const add0e = $dd0e
-.const add0f = $dd0f
+
 
 //---------------------------------------
         * = $e000 "Main"
@@ -192,8 +31,8 @@
         sta a00
         jmp ie183
 
-ie010:  lda #<fead8      //font
-        ldx #>fead8
+ie010:  lda #<ead8      //font
+        ldx #>ead8
         sta a09
         stx a0a
         lda #<$0800
@@ -211,10 +50,10 @@ ie024:  lda (p09),y
         dex
         bpl ie024
         ldx #$04
-ie034:  lda fe7ee,x
-        sta fdc07,x
-        lda fe7f2,x
-        sta fdd07,x
+ie034:  lda $e7ee,x
+        sta $dc07,x
+        lda $e7f2,x
+        sta $dd07,x
         dex
         bne ie034
         ldx #$00
@@ -222,74 +61,74 @@ ie034:  lda fe7ee,x
         stx a03
         ldx #$00
 ie04b:  lda #$20
-        sta f0400,x
-        sta f0500,x
-        sta f0600,x
-        sta f0700,x
+        sta $0400,x
+        sta $0500,x
+        sta $0600,x
+        sta $0700,x
         lda #$06
-        sta fd800,x
-        sta fd900,x
-        sta fda00,x
-        sta fdb00,x
+        sta $d800,x
+        sta $d900,x
+        sta $da00,x
+        sta $db00,x
         inx
         bne ie04b
         ldx #$27
-ie06c:  lda fe8a6,x      //box upper part
-        sta f0630,x
+ie06c:  lda e8a6,x      //box upper part
+        sta $0630,x
         lda #$02         //red
-        sta fda30,x
+        sta $da30,x
         dex
         bpl ie06c
         ldx #$00
-ie07c:  lda fe8ce,x
+ie07c:  lda e8ce,x
         cmp #$ff
         beq ie08a
-        sta f0658,x
+        sta $0658,x
         inx
         jmp ie07c
 
 ie08a:  ldx #$00
-ie08c:  lda fe9bf,x      //color
+ie08c:  lda e9bf,x      //color
         cmp #$ff
         beq ie09a
-        sta fda58,x
+        sta $da58,x
         inx
         jmp ie08c
 
 ie09a:  ldx #$27
-ie09c:  lda feab0,x      //box lower part
-        sta f0748,x
+ie09c:  lda eab0,x      //box lower part
+        sta $0748,x
         lda #$02         //red
-        sta fdb48,x
+        sta $db48,x
         dex
         bpl ie09c
         lda #$08
-        sta adc0f
-        sta add0f
+        sta $dc0f
+        sta $dd0f
         lda #$48
-        sta adc0e
+        sta $dc0e
         lda #$08
-        sta add0e
+        sta $dd0e
 
 ie0bc:  ldx #$2f
-ie0be:  lda fe7bf-1,x      //vic/d000- values
-        sta fcfff,x
+ie0be:  lda e7bf-1,x      //vic/d000- values
+        sta $cfff,x
         dex
         bne ie0be
         ldx #$18
-ie0c9:  lda fe817,x      //c-64 dead test rev 781220
-        sta f0408,x
+ie0c9:  lda e817,x      //c-64 dead test rev 781220
+        sta $0408,x
         dex
         bpl ie0c9
         ldx #$04
-ie0d4:  lda fe830,x      //count
-        sta f07c0,x
+ie0d4:  lda e830,x      //count
+        sta $07c0,x
         dex
         bpl ie0d4
         lda a02
         and #$0f
         ora #$30
-        sta a07c9
+        sta $07c9
         lda a02
         lsr
         lsr
@@ -297,11 +136,11 @@ ie0d4:  lda fe830,x      //count
         lsr
         and #$0f
         ora #$30
-        sta a07c8
+        sta $07c8
         lda a03
         and #$0f
         ora #$30
-        sta a07c7
+        sta $07c7
         lda a03
         lsr
         lsr
@@ -309,7 +148,7 @@ ie0d4:  lda fe830,x      //count
         lsr
         and #$0f
         ora #$30
-        sta a07c6
+        sta $07c6
         lda #$37
         sta a01
         jmp ie2fa        //zeropage test
@@ -323,8 +162,8 @@ ie113:  jsr ie6d9
         jsr ie6d9
         jsr ie46a        //ram test
 
-        lda #<fead8      //font
-        ldx #>fead8
+        lda #<ead8      //font
+        ldx #>ead8
         sta a09
         stx a0a
         lda #<$0800
@@ -357,41 +196,41 @@ ie139:  lda (p09),y
         lda #$37
         sta a00
         lda #$00
-        sta ad418
+        sta $d418
         ldx #$00
         lda #$20
-ie16d:  sta f0400,x
-        sta f0500,x
+ie16d:  sta $0400,x
+        sta $0500,x
         inx
         bne ie16d
         ldx #$2e
         lda #$20
-ie17a:  sta f0600,x
+ie17a:  sta $0600,x
         dex
         bpl ie17a
         jmp ie0bc
 
 ie183:  lda #$00
-        sta ad020
-        sta ad021
+        sta $d020
+        sta $d021
         ldx #$15
         ldy #$00
-ie18f:  lda fe7f7,x      //memtest pattern
-        sta f0100,y
-        sta f0200,y
-        sta f0300,y
-        sta f0400,y
-        sta f0500,y
-        sta f0600,y
-        sta f0700,y
-        sta f0800,y
-        sta f0900,y
-        sta f0a00,y
-        sta f0b00,y
-        sta f0c00,y
-        sta f0d00,y
-        sta f0e00,y
-        sta f0f00,y
+ie18f:  lda $e7f7,x      //memtest pattern
+        sta $0100,y
+        sta $0200,y
+        sta $0300,y
+        sta $0400,y
+        sta $0500,y
+        sta $0600,y
+        sta $0700,y
+        sta $0800,y
+        sta $0900,y
+        sta $0a00,y
+        sta $0b00,y
+        sta $0c00,y
+        sta $0d00,y
+        sta $0e00,y
+        sta $0f00,y
         iny
         bne ie18f
         txa
@@ -402,50 +241,50 @@ ie1c7:  dey
         dex
         bne ie1c7
         tax
-ie1ce:  lda f0100,y
-        cmp fe7f7,x      //memtest pattern
+ie1ce:  lda $0100,y
+        cmp $e7f7,x      //memtest pattern
         bne ie24c
-        lda f0200,y
-        cmp fe7f7,x      //memtest pattern
+        lda $0200,y
+        cmp $e7f7,x      //memtest pattern
         bne ie24c
-        lda f0300,y
-        cmp fe7f7,x      //memtest pattern
+        lda $0300,y
+        cmp $e7f7,x      //memtest pattern
         bne ie24c
-        lda f0400,y
-        cmp fe7f7,x      //memtest pattern
+        lda $0400,y
+        cmp $e7f7,x      //memtest pattern
         bne ie24c
-        lda f0500,y
-        cmp fe7f7,x      //memtest pattern
+        lda $0500,y
+        cmp $e7f7,x      //memtest pattern
         bne ie24c
-        lda f0600,y
-        cmp fe7f7,x      //memtest pattern
+        lda $0600,y
+        cmp $e7f7,x      //memtest pattern
         bne ie24c
-        lda f0700,y
-        cmp fe7f7,x      //memtest pattern
+        lda $0700,y
+        cmp $e7f7,x      //memtest pattern
         bne ie24c
-        lda f0800,y
-        cmp fe7f7,x      //memtest pattern
+        lda $0800,y
+        cmp $e7f7,x      //memtest pattern
         bne ie24c
-        lda f0900,y
-        cmp fe7f7,x      //memtest pattern
+        lda $0900,y
+        cmp $e7f7,x      //memtest pattern
         bne ie24c
-        lda f0a00,y
-        cmp fe7f7,x      //memtest pattern
+        lda $0a00,y
+        cmp $e7f7,x      //memtest pattern
         bne ie24c
-        lda f0b00,y
-        cmp fe7f7,x      //memtest pattern
+        lda $0b00,y
+        cmp $e7f7,x      //memtest pattern
         bne ie24c
-        lda f0c00,y
-        cmp fe7f7,x      //memtest pattern
+        lda $0c00,y
+        cmp $e7f7,x      //memtest pattern
         bne ie24c
-        lda f0d00,y
-        cmp fe7f7,x      //memtest pattern
+        lda $0d00,y
+        cmp $e7f7,x      //memtest pattern
         bne ie24c
-        lda f0e00,y
-        cmp fe7f7,x      //memtest pattern
+        lda $0e00,y
+        cmp $e7f7,x      //memtest pattern
         bne ie24c
-        lda f0f00,y
-        cmp fe7f7,x      //memtest pattern
+        lda $0f00,y
+        cmp $e7f7,x      //memtest pattern
         bne ie24c
         iny
         beq ie24f
@@ -460,7 +299,7 @@ ie24f:  dex
 
 ie257:  jmp ie010        //memtest ok
 
-ie25a:  eor fe7f7,x      //memtest pattern
+ie25a:  eor $e7f7,x      //memtest pattern
         tax
         and #$fe
         bne ie267
@@ -506,8 +345,8 @@ ie299:  txa
 ie2a3:  ldx #$01         //mem error flash
 ie2a5:  txs
 ie2a6:  lda #$01
-        sta ad020
-        sta ad021
+        sta $d020
+        sta $d021
         txa
         ldx #$7f
         ldy #$00
@@ -517,8 +356,8 @@ ie2b3:  dey
         bne ie2b3
         tax
         lda #$00
-        sta ad020
-        sta ad021
+        sta $d020
+        sta $d021
         txa
         ldx #$7f
         ldy #$00
@@ -557,14 +396,14 @@ ie2f0:  dey
         jmp ie2a6
 
 ie2fa:  ldx #$08
-ie2fc:  lda fe835,x      //zeropage test
-        sta f0450,x
+ie2fc:  lda e835,x      //zeropage test
+        sta $0450,x
         dex
         bpl ie2fc
         ldx #$13
-ie307:  lda fe7f7,x      //memtest pattern
+ie307:  lda $e7f7,x      //memtest pattern
         ldy #$12
-ie30c:  sta f0000,y
+ie30c:  sta $0000,y
         iny
         bne ie30c
         txa
@@ -575,39 +414,39 @@ ie317:  dey
         dex
         bne ie317
         tax
-        lda fe7f7,x      //memtest pattern
+        lda $e7f7,x      //memtest pattern
         ldy #$12
-ie323:  cmp f0000,y
+ie323:  cmp $0000,y
         bne ie33b
         iny
         bne ie323
         dex
         bpl ie307
         lda #$0f         //"o"
-        sta a045d
+        sta $045d
         lda #$0b         //"k"
-        sta a045e
+        sta $045e
         jmp ie110
 
-ie33b:  eor fe7f7,x      //memtest pattern
+ie33b:  eor $e7f7,x      //memtest pattern
         tax
         lda #$02         //"b"
-        sta a045d
+        sta $045d
         lda #$01         //"a"
-        sta a045e
+        sta $045e
         lda #$04         //"d"
-        sta a045f
+        sta $045f
         jmp ie4c1
 
 ie351:  ldx #$09
-ie353:  lda fe83e,x      //stack page
-        sta f0478,x
+ie353:  lda e83e,x      //stack page
+        sta $0478,x
         dex
         bpl ie353
         ldx #$13
-ie35e:  lda fe7f7,x      //memtest pattern
+ie35e:  lda $e7f7,x      //memtest pattern
         ldy #$00
-ie363:  sta f0100,y
+ie363:  sta $0100,y
         iny
         bne ie363
         txa
@@ -618,32 +457,32 @@ ie36e:  dey
         dex
         bne ie36e
         tax
-        lda fe7f7,x      //memtest pattern
-ie378:  cmp f0100,y
+        lda $e7f7,x      //memtest pattern
+ie378:  cmp $0100,y
         bne ie390
         iny
         bne ie378
         dex
         bpl ie35e
         lda #$0f         //"o"
-        sta a0485
+        sta $0485
         lda #$0b         //"k"
-        sta a0486
+        sta $0486
         jmp ie113
 
-ie390:  eor fe7f7,x      //memtest pattern
+ie390:  eor $e7f7,x      //memtest pattern
         tax
         lda #$02         //"b"
-        sta a0485
+        sta $0485
         lda #$01         //"a"
-        sta a0486
+        sta $0486
         lda #$04         //"d"
-        sta a0487
+        sta $0487
         jmp ie4c1
 
 ie3a6:  ldx #$09
-ie3a8:  lda fe863,x      //screen ram
-        sta f04a0,x
+ie3a8:  lda e863,x      //screen ram
+        sta $04a0,x
         dex
         bpl ie3a8
         ldx #<$0400
@@ -654,7 +493,7 @@ ie3b9:  ldy #$00
         lda (p09),y
         pha
         ldx #$13
-ie3c0:  lda fe7f7,x      //memtest pattern
+ie3c0:  lda $e7f7,x      //memtest pattern
         sta (p09),y
         txa
         ldx #$00
@@ -662,7 +501,7 @@ ie3c8:  dex
         bne ie3c8
         tax
         lda (p09),y
-        cmp fe7f7,x      //memtest pattern
+        cmp $e7f7,x      //memtest pattern
         bne ie3f0
         dex
         bpl ie3c0
@@ -675,24 +514,24 @@ ie3df:  lda a0a
         cmp #$08
         bne ie3b9
         lda #$0f         //"o"
-        sta a04ad
+        sta $04ad
         lda #$0b         //"k"
-        sta a04ae
+        sta $04ae
         rts
 
-ie3f0:  eor fe7f7,x      //memtest pattern
+ie3f0:  eor $e7f7,x      //memtest pattern
         tax
         lda #$02         //"b"
-        sta a04ad
+        sta $04ad
         lda #$01         //"a"
-        sta a04ae
+        sta $04ae
         lda #$04         //"d"
-        sta a04af
+        sta $04af
         jsr ie4c1
 
 ie406:  ldx #$08
-ie408:  lda fe850,x      //color ram test
-        sta f04c8,x
+ie408:  lda e850,x      //color ram test
+        sta $04c8,x
         dex
         bpl ie408
         ldx #<$d800
@@ -704,7 +543,7 @@ ie41b:  ldy #$00
         lda (p09),y
         pha
         ldx #$0b
-ie422:  lda fe80b,x
+ie422:  lda $e80b,x
         sta (p09),y
         txa
         ldx #$00
@@ -713,7 +552,7 @@ ie42a:  dex
         tax
         lda (p09),y
         and #$0f
-        cmp fe80b,x
+        cmp $e80b,x
         bne ie454
         dex
         bpl ie422
@@ -726,24 +565,24 @@ ie443:  lda a0a
         cmp #$dc
         bne ie41b
         lda #$0f         //"o"
-        sta a04d5
+        sta $04d5
         lda #$0b         //"k"
-        sta a04d6
+        sta $04d6
         rts
 
-ie454:  eor fe80b,x
+ie454:  eor $e80b,x
         tax
         lda #$02         //"b"
-        sta a04d5
+        sta $04d5
         lda #$01         //"a"
-        sta a04d6
+        sta $04d6
         lda #$04         //"d"
-        sta a04d7
+        sta $04d7
         jmp ie4c1
 
 ie46a:  ldx #$07
-ie46c:  lda fe848,x      //ram test
-        sta f04f0,x
+ie46c:  lda e848,x      //ram test
+        sta $04f0,x
         dex
         bpl ie46c
         ldx #<$0800
@@ -752,7 +591,7 @@ ie46c:  lda fe848,x      //ram test
         sty a0a
 ie47d:  ldy #$00
         ldx #$13
-ie481:  lda fe7f7,x      //memtest pattern
+ie481:  lda $e7f7,x      //memtest pattern
         sta (p09),y
         txa
         ldx #$7f
@@ -760,7 +599,7 @@ ie489:  dex
         bne ie489
         tax
         lda (p09),y
-        cmp fe7f7,x      //memtest pattern
+        cmp $e7f7,x      //memtest pattern
         bne ie4ae
         dex
         bpl ie481
@@ -771,223 +610,223 @@ ie49d:  lda a0a
         cmp #$10
         bne ie47d
         lda #$0f         //"o"
-        sta a04fd
+        sta $04fd
         lda #$0b         //"k"
-        sta a04fe
+        sta $04fe
         rts
 
-ie4ae:  eor fe7f7,x      //memtest pattern
+ie4ae:  eor $e7f7,x      //memtest pattern
         tax
         lda #$02         //"b"
-        sta a04fd
+        sta $04fd
         lda #$01         //"a"
-        sta a04fe
+        sta $04fe
         lda #$04         //"d"
-        sta a04ff
+        sta $04ff
 ie4c1:  txa
         and #$01
         beq ie4e0
         lda #$02         //"b"
-        sta a06a4
+        sta $06a4
         lda #$01         //"a"
-        sta a06a5
+        sta $06a5
         lda #$04         //"d"
-        sta a06a6
+        sta $06a6
         lda #$02         //red
-        sta adaa4
-        sta adaa5
-        sta adaa6
+        sta $daa4
+        sta $daa5
+        sta $daa6
 ie4e0:  txa
         and #$02
         beq ie4ff
         lda #$02         //"b"
-        sta a0699
+        sta $0699
         lda #$01         //"a"
-        sta a069a
+        sta $069a
         lda #$04         //"d"
-        sta a069b
+        sta $069b
         lda #$02         //red
-        sta ada99
-        sta ada9a
-        sta ada9b
+        sta $da99
+        sta $da9a
+        sta $da9b
 ie4ff:  txa
         and #$04
         beq ie51e
         lda #$02         //"b"
-        sta a06cc
+        sta $06cc
         lda #$01         //"a"
-        sta a06cd
+        sta $06cd
         lda #$04         //"d"
-        sta a06ce
+        sta $06ce
         lda #$02         //red
-        sta adacc
-        sta adacd
-        sta adace
+        sta $dacc
+        sta $dacd
+        sta $dace
 ie51e:  txa
         and #$08
         beq ie53d
         lda #$02         //"b"
-        sta a06c1
+        sta $06c1
         lda #$01         //"a"
-        sta a06c2
+        sta $06c2
         lda #$04         //"d"
-        sta a06c3
+        sta $06c3
         lda #$02         //red
-        sta adac1
-        sta adac2
-        sta adac3
+        sta $dac1
+        sta $dac2
+        sta $dac3
 ie53d:  txa
         and #$10
         beq ie55c
         lda #$02         //"b"
-        sta a06f4
+        sta $06f4
         lda #$01         //"a"
-        sta a06f5
+        sta $06f5
         lda #$04         //"d"
-        sta a06f6
+        sta $06f6
         lda #$02         //red
-        sta adaf4
-        sta adaf5
-        sta adaf6
+        sta $daf4
+        sta $daf5
+        sta $daf6
 ie55c:  txa
         and #$20
         beq ie57b
         lda #$02         //"b"
-        sta a06e9
+        sta $06e9
         lda #$01         //"a"
-        sta a06ea
+        sta $06ea
         lda #$04         //"d"
-        sta a06eb
+        sta $06eb
         lda #$02         //red
-        sta adae9
-        sta adaea
-        sta adaeb
+        sta $dae9
+        sta $daea
+        sta $daeb
 ie57b:  txa
         and #$40
         beq ie59a
         lda #$02         //"b"
-        sta a071c
+        sta $071c
         lda #$01         //"a"
-        sta a071d
+        sta $071d
         lda #$04         //"d"
-        sta a071e
+        sta $071e
         lda #$02         //red
-        sta adb1c
-        sta adb1d
-        sta adb1e
+        sta $db1c
+        sta $db1d
+        sta $db1e
 ie59a:  txa
         and #$80
         beq ie5b9
         lda #$02         //"b"
-        sta a0711
+        sta $0711
         lda #$01         //"a"
-        sta a0712
+        sta $0712
         lda #$04         //"d"
-        sta a0713
+        sta $0713
         lda #$02         //red
-        sta adb11
-        sta adb12
-        sta adb13
+        sta $db11
+        sta $db12
+        sta $db13
 ie5b9:  jmp ie5b9
 
 ie5bc:  ldx #$09
-ie5be:  lda fe859,x      //sound test
-        sta f0518,x
+ie5be:  lda e859,x      //sound test
+        sta $0518,x
         dex
         bpl ie5be
         lda #$14
-        sta ad418
+        sta $d418
         lda #$00
-        sta ad417
+        sta $d417
         lda #$3e
-        sta ad405
+        sta $d405
         lda #$ca
-        sta ad406
+        sta $d406
         lda #$00
-        sta ad412
+        sta $d412
         lda #$02
 ie5e2:  pha
         ldx #$06
-ie5e5:  lda fe86d,x
-        sta ad401
-        lda fe874,x
-        sta ad400
+ie5e5:  lda e86d,x
+        sta $d401
+        lda e874,x
+        sta $d400
         pla
         tay
-        lda fe89a,y
-        sta ad402
-        lda fe89d,y
-        sta ad403
-        lda fe897,y
-        sta ad404
+        lda e89a,y
+        sta $d402
+        lda e89d,y
+        sta $d403
+        lda e897,y
+        sta $d404
         tya
         pha
         lda #$6a
         jsr ie6b7
         lda #$00
-        sta ad404
+        sta $d404
         lda #$00
         jsr ie6b7
         dex
         bne ie5e5
         lda #$00
-        sta ad417
+        sta $d417
         lda #$18
-        sta ad418
+        sta $d418
         lda #$3e
-        sta ad40c
+        sta $d40c
         lda #$ca
-        sta ad40d
+        sta $d40d
         ldx #$06
-ie62f:  lda fe87b,x
-        sta ad408
-        lda fe882,x
-        sta ad407
+ie62f:  lda e87b,x
+        sta $d408
+        lda e882,x
+        sta $d407
         pla
         tay
-        lda fe89a,y
-        sta ad409
-        lda fe89d,y
-        sta ad40a
-        lda fe897,y
-        sta ad40b
+        lda e89a,y
+        sta $d409
+        lda e89d,y
+        sta $d40a
+        lda e897,y
+        sta $d40b
         tya
         pha
         lda #$6a
         jsr ie6b7
         lda #$00
-        sta ad40b
+        sta $d40b
         lda #$00
         jsr ie6b7
         dex
         bne ie62f
         lda #$00
-        sta ad417
+        sta $d417
         lda #$1f
-        sta ad418
+        sta $d418
         lda #$3e
-        sta ad413
+        sta $d413
         lda #$ca
-        sta ad414
+        sta $d414
         ldx #$06
-ie679:  lda fe889,x
-        sta ad40f
-        lda fe890,x
-        sta ad40e
+ie679:  lda e889,x
+        sta $d40f
+        lda e890,x
+        sta $d40e
         pla
         tay
-        lda fe89a,y
-        sta ad410
-        lda fe89d,y
-        sta ad411
-        lda fe897,y
-        sta ad412
+        lda e89a,y
+        sta $d410
+        lda e89d,y
+        sta $d411
+        lda e897,y
+        sta $d412
         tya
         pha
         lda #$6a
         jsr ie6b7
         lda #$00
-        sta ad412
+        sta $d412
         lda #$00
         jsr ie6b7
         dex
@@ -1021,44 +860,44 @@ ie6ca:  rts
         lda #$37
         sta a01
         lda #$48
-        sta adc0e
+        sta $dc0e
         lda #$08
-        sta add0e
-ie6d9:  lda adc0b
+        sta $dd0e
+ie6d9:  lda $dc0b
         clc
         asl
         bcc ie6ed
         lda #$10         //"p"
-        sta a07db
+        sta $07db
         lda #$0d         //"m"
-        sta a07dc
+        sta $07dc
         clc
         bcc ie6f7
 ie6ed:  lda #$01         //"a"
-        sta a07db
+        sta $07db
         lda #$0d         //"m"
-        sta a07dc
-ie6f7:  lda adc0b
+        sta $07dc
+ie6f7:  lda $dc0b
         and #$7f
         ldy #$01
         bne ie732
-ie700:  sta a07d3        //xx-00-00
-        stx a07d4
+ie700:  sta $07d3        //xx-00-00
+        stx $07d4
         lda #$2d         //"-"
-        sta a07d5
-        lda adc0a
+        sta $07d5
+        lda $dc0a
         ldy #$02
         bne ie732
-ie712:  sta a07d6        //00-xx-00
-        stx a07d7
+ie712:  sta $07d6        //00-xx-00
+        stx $07d7
         lda #$2d         //"-"
-        sta a07d8
-        lda adc09
+        sta $07d8
+        lda $dc09
         ldy #$03
         bne ie732
-ie724:  sta a07d9        //00-00-xx
-        stx a07da
-        lda adc08
+ie724:  sta $07d9        //00-00-xx
+        stx $07da
+        lda $dc08
         clc
         bcc ie76b
         ldy #$00
@@ -1096,44 +935,44 @@ ie74e:  cpy #$01
         beq ie7b6
         rts
 
-ie76b:  lda add0b
+ie76b:  lda $dd0b
         clc
         asl
         bcc ie77f
         lda #$10         //"p"
-        sta a07e6
+        sta $07e6
         lda #$0d         //"m"
-        sta a07e7
+        sta $07e7
         clc
         bcc ie789
 ie77f:  lda #$01         //"a"
-        sta a07e6
+        sta $07e6
         lda #$0d         //"m"
-        sta a07e7
-ie789:  lda add0b
+        sta $07e7
+ie789:  lda $dd0b
         and #$7f
         ldy #$05
 ie790:  bne ie732
-ie792:  sta a07de        //xx-00-00
-        stx a07df
+ie792:  sta $07de        //xx-00-00
+        stx $07df
         lda #$2d         //"-"
-        sta a07e0
-        lda add0a
+        sta $07e0
+        lda $dd0a
         ldy #$06
         bne ie790
-ie7a4:  sta a07e1        //00-xx-00
-        stx a07e2
+ie7a4:  sta $07e1        //00-xx-00
+        stx $07e2
         lda #$2d         //"-"
-        sta a07e3
-        lda add09
+        sta $07e3
+        lda $dd09
         ldy #$07
         bne ie790
-ie7b6:  sta a07e4        //00-00-xx
-        stx a07e5
-        lda add08
+ie7b6:  sta $07e4        //00-00-xx
+        stx $07e5
+        lda $dd08
         rts
 
-fe7bf:
+e7bf:
         .byte $00,$00,$00,$00,$00,$00,$00,$00
         .byte $00,$00,$00,$00,$00,$00,$00,$00
         .byte $00,$1b,$00,$00,$00,$00,$08,$00
@@ -1141,46 +980,46 @@ fe7bf:
         .byte $03,$01,$00,$00,$00,$00,$00,$00
         .byte $00,$00,$00,$00,$00,$00
 
-fe7ee:  .byte $00,$00,$00,$00
-fe7f2:  .byte $00,$00,$00,$00,$80
+e7ee:  .byte $00,$00,$00,$00
+e7f2:  .byte $00,$00,$00,$00,$80
 
-fe7f7:  .byte $00,$55,$aa,$ff,$01,$02,$04,$08     // memtest pattern
+e7f7:  .byte $00,$55,$aa,$ff,$01,$02,$04,$08     // memtest pattern
         .byte $10,$20,$40,$80,$fe,$fd,$fb,$f7     //
         .byte $ef,$df,$bf,$7f                     //
 
-fe80b:  .byte $00,$05,$0a,$0f,$01,$02,$04,$08
+e80b:  .byte $00,$05,$0a,$0f,$01,$02,$04,$08
         .byte $0e,$0d,$0b,$07
 
 
 .encoding "screencode_mixed"
-fe817:  .text "c-64 dead test rev 781220"
-fe830:  .text "count"
-fe835:  .text "zero page"
-fe83e:  .text "stack page"
-fe848:  .text "ram test"
-fe850:  .text "color ram"
-fe859:  .text "sound test"
-fe863:  .text "screen ram"
+e817:  .text "c-64 dead test rev 781220"
+e830:  .text "count"
+e835:  .text "zero page"
+e83e:  .text "stack page"
+e848:  .text "ram test"
+e850:  .text "color ram"
+e859:  .text "sound test"
+e863:  .text "screen ram"
 
-fe86d:  .byte $11,$15,$19,$22,$19,$15,$11         // soundtest
-fe874:  .byte $25,$9a,$b1,$4b,$b1,$9a,$25         //
-fe87b:  .byte $22,$2b,$33,$44,$33,$2b,$22         //
-fe882:  .byte $4b,$34,$61,$95,$61,$34,$4b         //
-fe889:  .byte $44,$56,$66,$89,$66,$56,$44         //
-fe890:  .byte $95,$69,$c2,$2b,$c2,$69,$95         //
-fe897:  .byte $45,$11,$25                         //
-fe89a:  .byte $00,$00,$00                         //
-fe89d:  .byte $08,$00,$00,$09,$00,$28,$ff,$1f     //
+e86d:  .byte $11,$15,$19,$22,$19,$15,$11         // soundtest
+e874:  .byte $25,$9a,$b1,$4b,$b1,$9a,$25         //
+e87b:  .byte $22,$2b,$33,$44,$33,$2b,$22         //
+e882:  .byte $4b,$34,$61,$95,$61,$34,$4b         //
+e889:  .byte $44,$56,$66,$89,$66,$56,$44         //
+e890:  .byte $95,$69,$c2,$2b,$c2,$69,$95         //
+e897:  .byte $45,$11,$25                         //
+e89a:  .byte $00,$00,$00                         //
+e89d:  .byte $08,$00,$00,$09,$00,$28,$ff,$1f     //
         .byte $af                                 //
 
 
-fe8a6:  .byte $20,$20,$20,$20,$20,$20,$20,$20     // box upper part
+e8a6:  .byte $20,$20,$20,$20,$20,$20,$20,$20     // box upper part
         .byte $20,$20,$20,$20,$20,$20,$22,$26
         .byte $26,$26,$26,$26,$26,$26,$26,$26
         .byte $26,$26,$26,$26,$26,$26,$26,$26
         .byte $26,$26,$26,$26,$26,$26,$26,$23
 
-fe8ce:  .byte $20,$20,$20,$20,$20,$20,$20,$20     // box text. 4164 etc.
+e8ce:  .byte $20,$20,$20,$20,$20,$20,$20,$20     // box text. 4164 etc.
         .byte $20,$20,$20,$20,$20,$20,$27,$20
         .byte $20,$20,$20,$20,$20,$20,$20,$20
         .byte $20,$20,$34,$31,$36,$34,$20,$20
@@ -1212,7 +1051,7 @@ fe8ce:  .byte $20,$20,$20,$20,$20,$20,$20,$20     // box text. 4164 etc.
         .byte $20,$20,$20,$20,$20,$20,$20,$27
         .byte $ff
 
-fe9bf:  .byte $06,$06,$06,$06,$06,$06,$06,$06     //color
+e9bf:  .byte $06,$06,$06,$06,$06,$06,$06,$06     //color
         .byte $06,$06,$06,$06,$06,$06,$02,$06
         .byte $06,$06,$06,$06,$06,$06,$06,$06
         .byte $06,$06,$06,$06,$06,$06,$06,$06
@@ -1244,13 +1083,13 @@ fe9bf:  .byte $06,$06,$06,$06,$06,$06,$06,$06     //color
         .byte $06,$06,$06,$06,$06,$06,$06,$02
         .byte $ff
 
-feab0:  .byte $20,$20,$20,$20,$20,$20,$20,$20     //box lower part
+eab0:  .byte $20,$20,$20,$20,$20,$20,$20,$20     //box lower part
         .byte $20,$20,$20,$20,$20,$20,$24,$26
         .byte $26,$26,$26,$26,$26,$26,$26,$26
         .byte $26,$26,$26,$26,$26,$26,$26,$26
         .byte $26,$26,$26,$26,$26,$26,$26,$25
 
-fead8:  .byte $00,$00,$00,$00,$00,$00,$00,$00     //font
+ead8:  .byte $00,$00,$00,$00,$00,$00,$00,$00     //font
         .byte $7e,$42,$42,$7e,$46,$46,$46,$00
         .byte $7e,$62,$62,$7e,$62,$62,$7e,$00
         .byte $7e,$42,$40,$40,$40,$42,$7e,$00
