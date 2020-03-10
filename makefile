@@ -19,3 +19,4 @@ run:
 	java -jar ${KICKASS_BIN} -odir ${BUILD_PATH} -log ${BUILD_PATH}/buildlog.txt -showmem ./main.asm
 	cartconv -t normal -name "woz" -i ${BUILD_PATH}/main.prg -o ${BUILD_PATH}/woz.crt
 	x64sc ${BUILD_PATH}/woz.crt
+
