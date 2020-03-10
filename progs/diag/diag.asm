@@ -369,7 +369,6 @@ memBankTest: {
 
         memFailureFlash: {
                                         // Given actual pattern, indentify what's failed
-
                 // Bank 8 Failed
                         eor MemTestPattern,x
                         tax
@@ -1283,8 +1282,11 @@ font:  .byte $00,$00,$00,$00,$00,$00,$00,$00     //font
         .byte $7e,$42,$42,$7e,$06,$06,$06,$00
 prefill:
 
-
-.fill ($ffff-prefill-5),$aa
+//      This should be an Util (ROMHI) cartrige
+//      GAME = 0, EXROM = 1 - Ultimax Mode, ROMLOW should be ignored
+//      C64 Karnel $E000-$FFFF will be overwritten
+//      Vectors below will grant start control
+.fill ($ffff-prefill-5), $aa
 
          *=$fffa
          .word $e000
