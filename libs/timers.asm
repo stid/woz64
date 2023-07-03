@@ -45,26 +45,33 @@ toDebug: {
 //      MemMap.MATH.result        = 16 bit result
 // --------------------------------------------------------
 delayOne: {
-                pha
-                lda     #$00
-                sta     MemMap.TIMERS.counter
-    loop1:      lda     #$fb    // wait for vertical retrace
-    loop2:      cmp     $d012   // until it reaches 251th raster line ($fb)
-                bne     loop2       // which is out of the inner screen area
-                inc     MemMap.TIMERS.counter // increase frame counter
-                lda     MemMap.TIMERS.counter // check if counter
-                cmp     #$32    // reached 50
-                bne     out         // if not, pass the color changing routine
-                jmp     exit
+    pha
+    lda     #$00
+    sta     MemMap.TIMERS.counter
 
-    out:
-                lda     $d012   // make sure we reached
-    loop3:      cmp     $d012   // the next raster line so next time we
-                beq     loop3
-                jmp loop1 // jump to main loop
-    exit:
-                pla
-                rts
+loop1:
+    lda     #$fb // wait for vertical retrace
+
+loop2:
+    cmp     $d012 // until it reaches 251th raster line ($fb)
+    beq     waitForNextLine
+    jmp     loop2 // loop back if not yet at the 251th raster line
+
+waitForNextLine:
+    lda     $d012 // make sure we reached
+
+loop3:
+    cmp     $d012 // the next raster line so next time we
+    beq     loop1 // jump back to the main loop if still on the same raster line
+
+    inc     MemMap.TIMERS.counter // increase frame counter
+    lda     MemMap.TIMERS.counter // check if counter
+    cmp     #$32 // reached 50
+    bne     loop1 // if not, jump back to the main loop
+
+exit:
+    pla
+    rts
 }
 
 

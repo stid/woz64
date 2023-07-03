@@ -145,6 +145,8 @@ init: {
                 sta     MemMap.VIDEO.CursorRow
                 lda     #%00000000
                 sta     MemMap.VIDEO.StatusBitsA
+                lda #COLUMN_NUM
+                sta MemMap.MATH.factor2
                 rts
 }
 
@@ -186,86 +188,80 @@ scrollUp: {
 //      A       = Character to Print VIDEO ASCII
 // --------------------------------------------------------
 sendChar: {
-                sei
-                phx
-                cmp     #CR
-                bne     !+
-                jsr     screenNewLine
-                iny
-                jmp     exit
-        !:
-                cmp     #BS
-                bne     !+
-                ldx     MemMap.VIDEO.CursorCol
-                cmp     #0
-                beq     exit
-                dec     MemMap.VIDEO.CursorCol
-        !:
-                // Store Base Video Address 16 bit
-                ldx     #<VIDEO_ADDR         // Low byte
-                stx     MemMap.VIDEO.TempVideoPointer
-                ldx     #>VIDEO_ADDR         // High byte
-                stx     MemMap.VIDEO.TempVideoPointer+1
+    sei
+    phx
+    cmp     #CR
+    bne     notCR
+    jsr     screenNewLine
+    iny
+    jmp     exit
 
-                // Temp Save Y
-                phy
+notCR:
+    cmp     #BS
+    bne     notBS
+    ldx     MemMap.VIDEO.CursorCol
+    beq     exit
+    dec     MemMap.VIDEO.CursorCol
+    jmp     storeBaseVideoAddress
 
-                //  CursorRow * 40
-                ldy     MemMap.VIDEO.CursorRow
-                sty     MemMap.MATH.factor1
-                ldy     #COLUMN_NUM
-                sty     MemMap.MATH.factor2
-                jsr     Math.multiply
+notBS:
+    // Store Base Video Address 16 bit
+storeBaseVideoAddress:
+    ldx     #<VIDEO_ADDR         // Low byte
+    stx     MemMap.VIDEO.TempVideoPointer
+    ldx     #>VIDEO_ADDR         // High byte
+    stx     MemMap.VIDEO.TempVideoPointer+1
 
-                //  Add mul result to TempVideoPointer
-                pha
+    // CursorRow * 40
+    ldy     MemMap.VIDEO.CursorRow
+    sty     MemMap.MATH.factor1
+    jsr     Math.multiply
 
-                clc
-                lda     MemMap.MATH.result
-                adc     MemMap.VIDEO.TempVideoPointer+1
-                sta     MemMap.VIDEO.TempVideoPointer+1
-                lda     MemMap.MATH.result+1
-                adc     MemMap.VIDEO.TempVideoPointer
-                sta     MemMap.VIDEO.TempVideoPointer
+    // Add mul result to TempVideoPointer
+    pha
+    clc
+    lda     MemMap.MATH.result
+    adc     MemMap.VIDEO.TempVideoPointer+1
+    sta     MemMap.VIDEO.TempVideoPointer+1
+    lda     MemMap.MATH.result+1
+    adc     MemMap.VIDEO.TempVideoPointer
+    sta     MemMap.VIDEO.TempVideoPointer
 
-                ldy     MemMap.VIDEO.CursorCol
-                cpy     #COLUMN_NUM                     // Is this > col num?
-                bcc     noEndOfLine
-                jsr     screenNewLine                   // Yes? Add new line first
+    ldy     MemMap.VIDEO.CursorCol
+    cpy     #COLUMN_NUM                     // Is this > col num?
+    bcc     noEndOfLine
+    jsr     screenNewLine                   // Yes? Add new line first
 
-                bitTest(%00000001, MemMap.VIDEO.StatusBitsA)
-                bne     noScrollTriggered
+    lda     MemMap.VIDEO.StatusBitsA
+    and     #%00000001
+    beq     noScrollTriggered
 
-                // Compensate Scroll
-                sec
-                lda     MemMap.VIDEO.TempVideoPointer
-                sbc     #40
-                sta     MemMap.VIDEO.TempVideoPointer
-                bcs     !+
-                dec     MemMap.VIDEO.TempVideoPointer+1
-        !:
+    // Compensate Scroll
+    sec
+    lda     MemMap.VIDEO.TempVideoPointer
+    sbc     #40
+    sta     MemMap.VIDEO.TempVideoPointer
+    bcs     noScrollTriggered
+    dec     MemMap.VIDEO.TempVideoPointer+1
 
-        noScrollTriggered:
-        noEndOfLine:
-                pla
-                // This is a backspace
-                cmp     #BS
-                bne     !+
-                lda     #' '
-                sta     (MemMap.VIDEO.TempVideoPointer), y
-                ply
-                jmp     exit
-        !:
-                // insert into screen
-                sta     (MemMap.VIDEO.TempVideoPointer), y
-                ply
-                iny
-                inc     MemMap.VIDEO.CursorCol
+noScrollTriggered:
+noEndOfLine:
+    pla
+    cmp     #BS
+    bne     notBackspace
+    lda     #' '
+    sta     (MemMap.VIDEO.TempVideoPointer), y
+    jmp     exit
 
-        exit:
-                plx
-                cli
-                rts
+notBackspace:
+    sta     (MemMap.VIDEO.TempVideoPointer), y
+    iny
+    inc     MemMap.VIDEO.CursorCol
+
+exit:
+    plx
+    cli
+    rts
 }
 
 // --------------------------------------------------------

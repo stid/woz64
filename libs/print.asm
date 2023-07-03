@@ -87,6 +87,10 @@ printLine: {
                 rts
 }
 
+
+// Hexadecimal lookup table
+hexTable: .text "0123456789ABCDEF"
+
 // --------------------------------------------------------
 // byteToHex -
 // Convert a byte to an HEX value
@@ -98,23 +102,22 @@ printLine: {
 //      A       = msn ascii char result
 //      X       = lns ascii char result
 // --------------------------------------------------------
-byteToHex:      {
-                pha
-                jsr !+
-                tax
-                pla
-                lsr
-                lsr
-                lsr
-                lsr
-
-        !:	and #$0f
-                cmp #$0a
-                bcc !+
-                adc #6
-
-        !:	adc #'0'
-                rts
+byteToHex: {
+    tay                    // Save the original byte in Y
+    and #$0F               // Mask the lower 4 bits (nibble)
+    tax                    // Transfer the lower nibble to X register
+    lda hexTable, x        // Load the ASCII value of the least significant hex digit
+    tya                    // Restore the original byte from Y
+    lsr                    // Shift the upper 4 bits (nibble) to the right
+    lsr
+    lsr
+    lsr
+    tax                    // Transfer the upper nibble to X register
+    pha                    // Push the ASCII value of the least significant hex digit to stack
+    lda hexTable, x        // Load the ASCII value of the most significant hex digit
+    tax                    // Transfer the ASCII value of the most significant hex digit to X
+    pla                    // Pop the ASCII value of the least significant hex digit from stack to A
+    rts                    // Return from the function                  // Return from the function
 }
 
 // --------------------------------------------------------

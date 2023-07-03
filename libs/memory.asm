@@ -123,30 +123,31 @@ toDebug: {
 //                           copy
 // --------------------------------------------------------
 clone: {
-                phr
-                sei
-                ldy     #0
-                ldx     MemMap.MEMORY.size
-                beq     md2
-        md1:    lda     (MemMap.MEMORY.from),y // move a page at a time
-                sta     (MemMap.MEMORY.dest),y
-                iny
-                bne     md1
-                inc     MemMap.MEMORY.from+1
-                inc     MemMap.MEMORY.dest+1
-                dex
-                bne     md1
-        md2:    ldx     MemMap.MEMORY.size+1
-                beq     md4
-        md3:    lda     (MemMap.MEMORY.from),y // move the remaining bytes
-                sta     (MemMap.MEMORY.dest),y
-                iny
-                dex
-                bne      md3
-                cli
-        md4:
-                plr
-                rts
+    phr
+    sei
+    ldy     #0
+    ldx     MemMap.MEMORY.size
+    beq     checkHighByte
+md1:    
+    lda     (MemMap.MEMORY.from),y // move a page at a time
+    sta     (MemMap.MEMORY.dest),y
+    iny
+    bne     md1
+    inc     MemMap.MEMORY.from+1
+    inc     MemMap.MEMORY.dest+1
+    dex
+    bne     md1
+checkHighByte:
+    ldx     MemMap.MEMORY.size+1
+md3:    
+    lda     (MemMap.MEMORY.from),y // move the remaining bytes
+    sta     (MemMap.MEMORY.dest),y
+    iny
+    dex
+    bne     md3
+    cli
+    plr
+    rts
 }
 
 // --------------------------------------------------------
@@ -161,29 +162,22 @@ clone: {
 //      A                  = The byte to fill memory with
 // --------------------------------------------------------
 fill: {
-                phr
-                sei
-                ldy     #0
-                ldx     MemMap.MEMORY.size
-                beq     md2
-        md1:
-                sta     (MemMap.MEMORY.dest),y
-                iny
-                bne     md1
-                inc     MemMap.MEMORY.dest+1
-                dex
-                bne     md1
-        md2:    ldx     MemMap.MEMORY.size+1
-                beq     md4
-        md3:
-                sta     (MemMap.MEMORY.dest),y
-                iny
-                dex
-                bne     md3
-                cli
-        md4:
-                plr
-                rts
+    phr
+    sei
+    ldy     #0
+    ldx     MemMap.MEMORY.size
+    cpx     MemMap.MEMORY.size+1
+    stx     MemMap.MEMORY.size+1
+fillLoop:
+    sta     (MemMap.MEMORY.dest),y
+    iny
+    bne     fillLoop
+    inc     MemMap.MEMORY.dest+1
+    dex
+    bne     fillLoop
+    cli
+    plr
+    rts
 }
 
 // Clear Memory with 0

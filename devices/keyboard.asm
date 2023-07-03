@@ -1,7 +1,6 @@
 #importonce
 #import "../core/module.asm"
 #import "../libs/memory.asm"
-#import "../core/module.asm"
 
 
 .filenamespace Keyboard
